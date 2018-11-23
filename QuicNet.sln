@@ -1,0 +1,34 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 14
+VisualStudioVersion = 14.0.24720.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuicNet", "QuicNet\QuicNet.csproj", "{139530BB-CB8C-4F82-B7D9-31C445EF2F69}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickNet.Utilities", "QuickNet.Utilities\QuickNet.Utilities.csproj", "{5E344C85-825E-470B-9998-CF9425CB8B8E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickNet.Console", "QuickNet.Console\QuickNet.Console.csproj", "{D348C0C7-7F21-4E6D-855B-397BCC35F4B6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{139530BB-CB8C-4F82-B7D9-31C445EF2F69}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{139530BB-CB8C-4F82-B7D9-31C445EF2F69}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{139530BB-CB8C-4F82-B7D9-31C445EF2F69}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{139530BB-CB8C-4F82-B7D9-31C445EF2F69}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5E344C85-825E-470B-9998-CF9425CB8B8E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5E344C85-825E-470B-9998-CF9425CB8B8E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5E344C85-825E-470B-9998-CF9425CB8B8E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5E344C85-825E-470B-9998-CF9425CB8B8E}.Release|Any CPU.Build.0 = Release|Any CPU
+		{D348C0C7-7F21-4E6D-855B-397BCC35F4B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{D348C0C7-7F21-4E6D-855B-397BCC35F4B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{D348C0C7-7F21-4E6D-855B-397BCC35F4B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{D348C0C7-7F21-4E6D-855B-397BCC35F4B6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
