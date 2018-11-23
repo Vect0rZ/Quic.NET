@@ -32,13 +32,13 @@ namespace QuickNet.Utilities
         public static byte[] Encode(UInt64 integer)
         {
             int requredBytes = 0;
-            if (integer <= 63)
+            if (integer <= byte.MaxValue >> 2) /* 63 */
                 requredBytes = 1;
-            else if (integer <= 16383)
+            else if (integer <= UInt16.MaxValue >> 2) /* 16383 */
                 requredBytes = 2;
-            else if (integer <= 1073741823)
+            else if (integer <= UInt32.MaxValue >> 2) /* 1073741823 */
                 requredBytes = 4;
-            else if (integer <= 4611686018427387903)
+            else if (integer <= UInt64.MaxValue >> 2) /* 4611686018427387903 */
                 requredBytes = 8;
 
             byte[] uInt64Bytes = BitConverter.GetBytes(integer);
