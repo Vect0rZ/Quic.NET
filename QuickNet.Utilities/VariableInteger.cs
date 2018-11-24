@@ -38,23 +38,23 @@ namespace QuickNet.Utilities
 
         public static byte[] Encode(UInt64 integer)
         {
-            int requredBytes = 0;
+            int requiredBytes = 0;
             if (integer <= byte.MaxValue >> 2) /* 63 */
-                requredBytes = 1;
+                requiredBytes = 1;
             else if (integer <= UInt16.MaxValue >> 2) /* 16383 */
-                requredBytes = 2;
+                requiredBytes = 2;
             else if (integer <= UInt32.MaxValue >> 2) /* 1073741823 */
-                requredBytes = 4;
+                requiredBytes = 4;
             else if (integer <= UInt64.MaxValue >> 2) /* 4611686018427387903 */
-                requredBytes = 8;
+                requiredBytes = 8;
 
             byte[] uInt64Bytes = BitConverter.GetBytes(integer);
-            byte last = uInt64Bytes[requredBytes - 1];
-            last = (byte)(last | (requredBytes / 2) << 6);
-            uInt64Bytes[requredBytes - 1] = last;
+            byte last = uInt64Bytes[requiredBytes - 1];
+            last = (byte)(last | (requiredBytes / 2) << 6);
+            uInt64Bytes[requiredBytes - 1] = last;
 
-            byte[] result = new byte[requredBytes];
-            Buffer.BlockCopy(uInt64Bytes, 0, result, 0, requredBytes);
+            byte[] result = new byte[requiredBytes];
+            Buffer.BlockCopy(uInt64Bytes, 0, result, 0, requiredBytes);
 
             return result;
         }
