@@ -11,9 +11,10 @@ namespace QuickNet.Console
     {
         static void Main(string[] args)
         {
-            byte[] bytes = new VariableInteger(15293);
+            byte[] bytes = new VariableInteger(15);
             VariableInteger integer = bytes;
             UInt64 uinteger = integer;
+            int size = VariableInteger.Size(bytes[0]);
         }
     }
 }

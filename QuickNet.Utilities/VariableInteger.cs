@@ -29,6 +29,13 @@ namespace QuickNet.Utilities
             return integer._integer;
         }
 
+        public static int Size(byte firstByte)
+        {
+            int result = (int)Math.Pow(2, (firstByte >> 6));
+
+            return result;
+        }
+
         public static byte[] Encode(UInt64 integer)
         {
             int requredBytes = 0;
