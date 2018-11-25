@@ -6,6 +6,8 @@ namespace QuicNet.Infrastructure.Packets
 {
     public class RetryPacket : Packet
     {
+        protected override byte _type => throw new NotImplementedException();
+
         public override Packet Decode(byte[] packet)
         {
             throw new NotImplementedException();
