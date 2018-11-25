@@ -6,7 +6,8 @@ using System.Threading.Tasks;
 
 namespace QuicNet
 {
-    public class Class1
+    public class QuicListener
     {
+
     }
 }
