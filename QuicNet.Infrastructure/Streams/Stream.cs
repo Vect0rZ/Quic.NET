@@ -2,12 +2,12 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace QuicNet.Infrastructure.Packet
+namespace QuicNet.Infrastructure.Streams
 {
     /// <summary>
-    /// Base data transfer unit of QUIC Transport.
+    /// Virtual multiplexing channel.
     /// </summary>
-    public abstract class Packet
+    public class Stream
     {
 
     }

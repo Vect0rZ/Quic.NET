@@ -2,13 +2,13 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace QuicNet.Infrastructure.Frame
+namespace QuicNet.Infrastructure.Frames
 {
     /// <summary>
     /// Data encapsulation unit for a Packet.
     /// </summary>
     public abstract class Frame
     {
-
+        public abstract byte[] Build();
     }
 }
