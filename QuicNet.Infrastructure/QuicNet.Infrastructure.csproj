@@ -6,6 +6,11 @@
 
   <ItemGroup>
     <Folder Include="Connections\" />
+    <Folder Include="Settings\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\QuickNet.Utilities\QuickNet.Utilities.csproj" />
   </ItemGroup>
 
 </Project>

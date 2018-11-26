@@ -48,26 +48,28 @@ namespace QuickNet.Utilities
             else if (integer <= UInt64.MaxValue >> 2) /* 4611686018427387903 */
                 requiredBytes = 8;
 
-            byte[] uInt64Bytes = BitConverter.GetBytes(integer);
-            byte last = uInt64Bytes[requiredBytes - 1];
-            last = (byte)(last | (requiredBytes / 2) << 6);
-            uInt64Bytes[requiredBytes - 1] = last;
+            int offset = 8 - requiredBytes;
+
+            byte[] uInt64Bytes = ByteUtilities.GetBytes(integer);
+            byte first = uInt64Bytes[offset];
+            first = (byte)(first | (requiredBytes / 2) << 6);
+            uInt64Bytes[offset] = first;
 
             byte[] result = new byte[requiredBytes];
-            Buffer.BlockCopy(uInt64Bytes, 0, result, 0, requiredBytes);
+            Buffer.BlockCopy(uInt64Bytes, offset, result, 0, requiredBytes);
 
             return result;
         }
 
         public static UInt64 Decode(byte[] bytes)
         {
-            int i = bytes.Length - 1;
+            int i = 8 - bytes.Length;
             byte[] buffer = new byte[8];
 
-            Buffer.BlockCopy(bytes, 0, buffer, 0, bytes.Length);
+            Buffer.BlockCopy(bytes, 0, buffer, i, bytes.Length);
             buffer[i] = (byte)(buffer[i] & (255 >> 2));
 
-            UInt64 res = BitConverter.ToUInt64(buffer, 0);
+            UInt64 res = ByteUtilities.ToUInt64(buffer);
 
             return res;
         }
