@@ -11,9 +11,9 @@ namespace QuicNet.Infrastructure.Packets
     public abstract class Packet
     {
         protected List<Frame> _frames;
-        protected abstract byte _type { get; }
+        public abstract byte Type { get; }
 
         public abstract byte[] Encode();
-        public abstract Packet Decode(byte[] packet);
+        public abstract void Decode(byte[] packet);
     }
 }

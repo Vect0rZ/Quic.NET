@@ -9,6 +9,8 @@ namespace QuickNet.Utilities
     public class VariableInteger
     {
         private UInt64 _integer;
+        public UInt64 Value { get { return _integer; } }
+
         public VariableInteger(UInt64 integer)
         {
             _integer = integer;
@@ -22,6 +24,11 @@ namespace QuickNet.Utilities
         public static implicit operator VariableInteger(byte[] bytes)
         {
             return new VariableInteger(Decode(bytes));
+        }
+
+        public static implicit operator VariableInteger(UInt64 integer)
+        {
+            return new VariableInteger(integer);
         }
 
         public static implicit operator UInt64(VariableInteger integer)

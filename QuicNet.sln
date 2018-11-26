@@ -9,7 +9,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickNet.Utilities", "Quick
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickNet.Tests.Console", "QuickNet.Console\QuickNet.Tests.Console.csproj", "{D348C0C7-7F21-4E6D-855B-397BCC35F4B6}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuicNet.Infrastructure", "QuicNet.Infrastructure\QuicNet.Infrastructure.csproj", "{4AA40683-B3D3-47DE-894D-1440FDEA5181}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuicNet.Infrastructure", "QuicNet.Infrastructure\QuicNet.Infrastructure.csproj", "{8159F64B-7511-4DFF-8998-EFB029334A56}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -29,10 +29,10 @@ Global
 		{D348C0C7-7F21-4E6D-855B-397BCC35F4B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D348C0C7-7F21-4E6D-855B-397BCC35F4B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D348C0C7-7F21-4E6D-855B-397BCC35F4B6}.Release|Any CPU.Build.0 = Release|Any CPU
-		{4AA40683-B3D3-47DE-894D-1440FDEA5181}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{4AA40683-B3D3-47DE-894D-1440FDEA5181}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{4AA40683-B3D3-47DE-894D-1440FDEA5181}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{4AA40683-B3D3-47DE-894D-1440FDEA5181}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8159F64B-7511-4DFF-8998-EFB029334A56}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8159F64B-7511-4DFF-8998-EFB029334A56}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8159F64B-7511-4DFF-8998-EFB029334A56}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8159F64B-7511-4DFF-8998-EFB029334A56}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

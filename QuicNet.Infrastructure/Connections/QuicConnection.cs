@@ -4,9 +4,9 @@ using System.Text;
 
 namespace QuicNet.Infrastructure.Connections
 {
-    public class Connection
+    public class QuicConnection
     {
-        public Connection(UInt32 id)
+        public QuicConnection(UInt32 id)
         {
 
         }

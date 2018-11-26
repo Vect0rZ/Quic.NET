@@ -54,6 +54,10 @@
       <Project>{5e344c85-825e-470b-9998-cf9425cb8b8e}</Project>
       <Name>QuickNet.Utilities</Name>
     </ProjectReference>
+    <ProjectReference Include="..\QuicNet.Infrastructure\QuicNet.Infrastructure.csproj">
+      <Project>{8159f64b-7511-4dff-8998-efb029334a56}</Project>
+      <Name>QuicNet.Infrastructure</Name>
+    </ProjectReference>
     <ProjectReference Include="..\QuicNet\QuicNet.csproj">
       <Project>{139530bb-cb8c-4f82-b7d9-31c445ef2f69}</Project>
       <Name>QuicNet</Name>

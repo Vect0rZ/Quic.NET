@@ -17,6 +17,15 @@ namespace QuickNet.Utilities
             return result;
         }
 
+        public static byte[] GetBytes(UInt32 integer)
+        {
+            byte[] result = BitConverter.GetBytes(integer);
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(result);
+
+            return result;
+        }
+
         public static UInt64 ToUInt64(byte[] data)
         {
             if (BitConverter.IsLittleEndian)
@@ -26,5 +35,16 @@ namespace QuickNet.Utilities
 
             return result;
         }
+
+        public static UInt32 ToUInt32(byte[] data)
+        {
+            if (BitConverter.IsLittleEndian)
+                Array.Reverse(data);
+
+            UInt32 result = BitConverter.ToUInt32(data, 0);
+
+            return result;
+        }
+
     }
 }

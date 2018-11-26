@@ -44,6 +44,16 @@
     <Compile Include="QuicListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\QuickNet.Utilities\QuickNet.Utilities.csproj">
+      <Project>{5e344c85-825e-470b-9998-cf9425cb8b8e}</Project>
+      <Name>QuickNet.Utilities</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\QuicNet.Infrastructure\QuicNet.Infrastructure.csproj">
+      <Project>{8159f64b-7511-4dff-8998-efb029334a56}</Project>
+      <Name>QuicNet.Infrastructure</Name>
+    </ProjectReference>
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

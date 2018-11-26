@@ -1,4 +1,6 @@
 ﻿using QuickNet.Utilities;
+using QuicNet;
+using QuicNet.Infrastructure.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,7 +18,17 @@ namespace QuickNet.Console
             UInt64 uinteger = integer;
             int size = VariableInteger.Size(bytes[0]);
 
-            ByteUtilities.ToUInt64(ByteUtilities.GetBytes(12345));
+            InitialPacket packet = new InitialPacket()
+            {
+                Version = 16,
+                SourceConnectionId = 124,
+                DestinationConnectionId = 0,
+                PacketNumber = 777521,
+                TokenLength = 0
+            };
+
+            byte[] data = packet.Encode();
+            packet.Decode(data);
         }
     }
 }

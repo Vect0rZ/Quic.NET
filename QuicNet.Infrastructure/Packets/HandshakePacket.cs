@@ -6,9 +6,9 @@ namespace QuicNet.Infrastructure.Packets
 {
     public class HandshakePacket : Packet
     {
-        protected override byte _type => throw new NotImplementedException();
+        public override byte Type => throw new NotImplementedException();
 
-        public override Packet Decode(byte[] packet)
+        public override void Decode(byte[] packet)
         {
             throw new NotImplementedException();
         }

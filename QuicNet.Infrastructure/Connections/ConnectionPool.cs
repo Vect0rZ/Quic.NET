@@ -16,7 +16,7 @@ namespace QuicNet.Infrastructure.Connections
         /// </summary>
         private static UInt32 _connectionIdIterator = 0;
 
-        private Dictionary<UInt32, Connection> _pool = new Dictionary<UInt32, Connection>();
+        private Dictionary<UInt32, QuicConnection> _pool = new Dictionary<UInt32, QuicConnection>();
 
         public ConnectionPool()
         {
