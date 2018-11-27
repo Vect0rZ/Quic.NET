@@ -40,7 +40,7 @@ namespace QuicNet.Infrastructure.Packets
             return result;
         }
 
-        private PacketType GetPacketType(byte[] data)
+        public PacketType GetPacketType(byte[] data)
         {
             if (data == null || data.Length <= 0)
                 return PacketType.BrokenPacket;
