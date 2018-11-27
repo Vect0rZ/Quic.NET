@@ -25,42 +25,22 @@ namespace QuicNet.Infrastructure.Packets
 
         public override void Decode(byte[] packet)
         {
-            int offset = 1;
+            ByteArray array = new ByteArray(packet);
+            array.ReadByte();
+            Version = array.ReadUInt32();
+            DCIL_SCIL = array.ReadByte();
 
-            // Set version
-            byte[] version = new byte[4];
-            Buffer.BlockCopy(packet, offset, version, 0, 4);
-            Version = ByteUtilities.ToUInt32(version);
-            offset += 4;
-
-            // Set DCI and SCI
-            DCIL_SCIL = packet[offset++];
             if ((DCIL_SCIL & 0xF0) != 0)
-                DestinationConnectionId = packet[offset++];
+                DestinationConnectionId = array.ReadByte();
             if ((DCIL_SCIL & 0x0F) != 0)
-                SourceConnectionId = packet[offset++];
+                SourceConnectionId = array.ReadByte();
 
-            // Set Token Length and Token
-            int varIntSize = VariableInteger.Size(packet[offset]);
-            byte[] tokenLength = new byte[varIntSize];
-            Buffer.BlockCopy(packet, offset, tokenLength, 0, varIntSize);
-            offset += varIntSize;
-            TokenLength = tokenLength;
-
+            TokenLength = array.ReadVariableInteger();
             if (TokenLength != 0)
-                Buffer.BlockCopy(packet, offset += (int)TokenLength.Value, Token, 0, (int)TokenLength.Value);
+                Token = array.ReadBytes((int)TokenLength.Value);
 
-            // Set Length
-            varIntSize = VariableInteger.Size(packet[offset]);
-            byte[] length = new byte[varIntSize];
-            Buffer.BlockCopy(packet, offset, length, 0, varIntSize);
-            offset += varIntSize;
-            Length = length;
-
-            // Set packet number
-            byte[] packetNumber = new byte[4];
-            Buffer.BlockCopy(packet, offset, packetNumber, 0, 4);
-            PacketNumber = ByteUtilities.ToUInt32(packetNumber);
+            Length = array.ReadVariableInteger();
+            PacketNumber = array.ReadUInt32();
 
             Length = Length - 4;
         }
