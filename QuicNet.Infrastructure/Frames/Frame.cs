@@ -9,6 +9,7 @@ namespace QuicNet.Infrastructure.Frames
     /// </summary>
     public abstract class Frame
     {
+        public abstract byte Type { get; }
         public abstract byte[] Build();
     }
 }
