@@ -1,6 +1,6 @@
 <h1> <p align="center"> QuicNet </p> </h1>
 <p align="center">
-    <a href="https://travis-ci.org/Vect0rZ/QUICTransportNE"><img src="https://travis-ci.org/Vect0rZ/QUICTransportNET.svg?branch=master" alt="Build Status"></a>
+    <a href="https://travis-ci.org/Vect0rZ/QUICTransportNET"><img src="https://travis-ci.org/Vect0rZ/QUICTransportNET.svg?branch=master" alt="Build Status"></a>
 </p>
 
 # What is QUIC?
