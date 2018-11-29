@@ -6,8 +6,7 @@
 # What is QUIC?
 
 QUIC is an experimental transport layer protocol designed by Google, aiming to speed up the data transfer of connection-oriented web applications.
-It is implemented in the application-spaces as opposed to residing in the operating system, 
-The protocol aims to switch from TCP to UDP by using several techniques to resemble the TCP transfer while reducing the connection handshakes,
+This application-level protocol aims to switch from TCP to UDP by using several techniques to resemble the TCP transfer while reducing the connection handshakes,
 as well as to provide sensible multiplexing techniques in a way that different data entities can be interleaved during transfer.
 
 # What is QuicNet?
@@ -19,7 +18,7 @@ and does NOT YET offer implementation of the following related drafts:
 * [quic-tls](https://datatracker.ietf.org/doc/draft-ietf-quic-tls/?include_text=1)
 * [quic-recovery](https://datatracker.ietf.org/doc/draft-ietf-quic-recovery/?include_text=1)
 
-# Conrtibuting
+# Contributing
 
 Contributions are not yet open until the initial implementation of the quic-transport layer is finished at a working state.
 Meanwhile feel free to fork, suggest, comment and overall be proactive.
