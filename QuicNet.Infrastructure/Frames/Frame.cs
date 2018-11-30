@@ -11,6 +11,6 @@ namespace QuicNet.Infrastructure.Frames
     {
         public abstract byte Type { get; }
         public abstract byte[] Encode();
-        public abstract void Decode();
+        public abstract void Decode(byte[] packet);
     }
 }

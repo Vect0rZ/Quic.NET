@@ -1,5 +1,7 @@
 ﻿using QuickNet.Utilities;
 using QuicNet;
+using QuicNet.Infrastructure;
+using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.Packets;
 using System;
 using System.Collections.Generic;
@@ -29,6 +31,11 @@ namespace QuickNet.Console
 
             byte[] data = packet.Encode();
             packet.Decode(data);
+
+            ConnectionCloseFrame frame = new ConnectionCloseFrame(ErrorCode.SERVER_BUSY, "The server is too busy to process your request.");
+            byte[] ccfData = frame.Encode();
+
+            frame.Decode(ccfData);
         }
     }
 }

@@ -51,6 +51,14 @@ namespace QuickNet.Utilities
             return bytes;
         }
 
+        public UInt16 ReadUInt16()
+        {
+            byte[] bytes = ReadBytes(2);
+            UInt16 result = ByteUtilities.ToUInt16(bytes);
+
+            return result;
+        }
+
         public UInt32 ReadUInt32()
         {
             byte[] bytes = ReadBytes(4);

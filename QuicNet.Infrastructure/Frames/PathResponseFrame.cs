@@ -10,7 +10,7 @@ namespace QuicNet.Infrastructure.Frames
     {
         public override byte Type => 0x0f;
 
-        public override void Decode()
+        public override void Decode(byte[] packet)
         {
             throw new NotImplementedException();
         }

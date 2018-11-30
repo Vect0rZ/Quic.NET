@@ -35,7 +35,6 @@ namespace QuicNet.Infrastructure
                     // Not accepting connections. Send initial packet with CONNECTION_CLOSE frame.
                     InitialPacket error = _packetCreator.CreateServerBusyPacket();
                 }
-
             }
 
             // TODO: Buffering. The server might buffer incomming 0-RTT packets in anticipation of late delivery InitialPacket.
