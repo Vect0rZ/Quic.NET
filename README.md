@@ -1,4 +1,4 @@
-<h1> <p align="center"> QuicNet </p> </h1>
+<h1 align="center"> QuicNet</h1>
 <p align="center">
     <a href="https://travis-ci.org/Vect0rZ/QUICTransportNET"><img src="https://travis-ci.org/Vect0rZ/QUICTransportNET.svg?branch=master" alt="Build Status"></a>
 </p>
@@ -29,7 +29,6 @@ Packets are the data transfer units. The packet header contains information abou
 
 ## Frame
 Frames are the smallest unit that contain the data that needs to be trasferred to the Endpoint.
-
 
 # Contributing
 
