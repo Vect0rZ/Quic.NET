@@ -10,7 +10,12 @@ namespace QuicNet.Infrastructure.Frames
     {
         public override byte Type => 0x18;
 
-        public override byte[] Build()
+        public override void Decode()
+        {
+            throw new NotImplementedException();
+        }
+
+        public override byte[] Encode()
         {
             throw new NotImplementedException();
         }

@@ -18,5 +18,10 @@ namespace QuicNet.Infrastructure
         {
             return new VersionNegotiationPacket();
         }
+
+        public InitialPacket CreateServerBusyPacket()
+        {
+            return new InitialPacket();
+        }
     }
 }

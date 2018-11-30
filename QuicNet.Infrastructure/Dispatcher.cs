@@ -19,23 +19,27 @@ namespace QuicNet.Infrastructure
 
         public Packet Dispatch(Packet packet)
         {
-            // Unsupported version
-            if (packet.Version != QuicVersion.CurrentVersion || !QuicVersion.SupportedVersions.Contains(packet.Version))
-            {
-                VersionNegotiationPacket vnp = _packetCreator.CreateVersionNegotiationPacket();
-                return vnp;
-            }
-
             // Initial connection
             if (packet is InitialPacket)
             {
-                InitialPacket cast = packet as InitialPacket;
+                // Unsupported version. Version negotiation packet is sent only on initial connection. All other packets are dropped. (5.2.2)
+                if (packet.Version != QuicVersion.CurrentVersion || !QuicVersion.SupportedVersions.Contains(packet.Version))
+                {
+                    VersionNegotiationPacket vnp = _packetCreator.CreateVersionNegotiationPacket();
+                    return vnp;
+                }
 
+                InitialPacket cast = packet as InitialPacket;
                 if (!ConnectionPool.AddConnection(cast.SourceConnectionId))
                 {
-
+                    // Not accepting connections. Send initial packet with CONNECTION_CLOSE frame.
+                    InitialPacket error = _packetCreator.CreateServerBusyPacket();
                 }
+
             }
+
+            // TODO: Buffering. The server might buffer incomming 0-RTT packets in anticipation of late delivery InitialPacket.
+            // Maximum buffer size should be set in QuicSettings.
 
             return null;
         }
