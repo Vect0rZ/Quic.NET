@@ -8,6 +8,6 @@ namespace QuicNet.Infrastructure.Settings
     {
         public const int CurrentVersion = 16;
 
-        public static readonly List<int> SupportedVersions = new List<int>() { 15, 16 };
+        public static readonly List<UInt32> SupportedVersions = new List<UInt32>() { 15, 16 };
     }
 }

@@ -13,6 +13,8 @@ namespace QuicNet.Infrastructure.Packets
         protected List<Frame> _frames;
         public abstract byte Type { get; }
 
+        public UInt32 Version { get; set; }
+
         public abstract byte[] Encode();
         public abstract void Decode(byte[] packet);
     }
