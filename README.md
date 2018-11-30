@@ -3,6 +3,15 @@
     <a href="https://travis-ci.org/Vect0rZ/QUICTransportNET"><img src="https://travis-ci.org/Vect0rZ/QUICTransportNET.svg?branch=master" alt="Build Status"></a>
 </p>
 
+# What is QuicNet?
+
+QuicNet is a .NET implementation of the aforementioned QUIC protocol.
+The implementation stays in line with the 16th version of the [quic-transport](https://datatracker.ietf.org/doc/draft-ietf-quic-transport/?include_text=1) draft,
+and does NOT YET offer implementation of the following related drafts:
+
+* [quic-tls](https://datatracker.ietf.org/doc/draft-ietf-quic-tls/?include_text=1)
+* [quic-recovery](https://datatracker.ietf.org/doc/draft-ietf-quic-recovery/?include_text=1)
+
 # What is QUIC?
 
 QUIC is an experimental transport layer protocol designed by Google, aiming to speed up the data transfer of connection-oriented web applications.
@@ -21,14 +30,6 @@ Packets are the data transfer units. The packet header contains information abou
 ## Frame
 Frames are the smallest unit that contain the data that needs to be trasferred to the Endpoint.
 
-# What is QuicNet?
-
-QuicNet is a .NET implementation of the aforementioned QUIC protocol.
-The implementation stays in line with the 16th version of the [quic-transport](https://datatracker.ietf.org/doc/draft-ietf-quic-transport/?include_text=1) draft,
-and does NOT YET offer implementation of the following related drafts:
-
-* [quic-tls](https://datatracker.ietf.org/doc/draft-ietf-quic-tls/?include_text=1)
-* [quic-recovery](https://datatracker.ietf.org/doc/draft-ietf-quic-recovery/?include_text=1)
 
 # Contributing
 
