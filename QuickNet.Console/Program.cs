@@ -28,14 +28,15 @@ namespace QuickNet.Console
                 PacketNumber = 777521,
                 TokenLength = 0
             };
+            ConnectionCloseFrame frame = new ConnectionCloseFrame(ErrorCode.SERVER_BUSY, "The server is too busy to process your request.");
+            packet.AttachFrame(frame);
 
             byte[] data = packet.Encode();
             packet.Decode(data);
 
-            ConnectionCloseFrame frame = new ConnectionCloseFrame(ErrorCode.SERVER_BUSY, "The server is too busy to process your request.");
+           
             byte[] ccfData = frame.Encode();
-
-            frame.Decode(ccfData);
+            frame.Decode(new ByteArray(ccfData));
         }
     }
 }

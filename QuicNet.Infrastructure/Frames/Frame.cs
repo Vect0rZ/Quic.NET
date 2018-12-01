@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuickNet.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Text;
 
@@ -11,6 +12,6 @@ namespace QuicNet.Infrastructure.Frames
     {
         public abstract byte Type { get; }
         public abstract byte[] Encode();
-        public abstract void Decode(byte[] packet);
+        public abstract void Decode(ByteArray array);
     }
 }

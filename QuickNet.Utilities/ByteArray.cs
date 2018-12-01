@@ -79,5 +79,10 @@ namespace QuickNet.Utilities
 
             return bytes;
         }
+
+        public bool HasData()
+        {
+            return _offset < _length;
+        }
     }
 }

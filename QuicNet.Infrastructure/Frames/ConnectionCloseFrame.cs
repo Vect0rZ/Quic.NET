@@ -28,9 +28,8 @@ namespace QuicNet.Infrastructure.Frames
             ReasonPhrase = reason;
         }
 
-        public override void Decode(byte[] packet)
+        public override void Decode(ByteArray array)
         {
-            ByteArray array = new ByteArray(packet);
             byte type = array.ReadByte();
 
             ErrorCode = array.ReadUInt16();

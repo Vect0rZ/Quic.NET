@@ -43,10 +43,14 @@ namespace QuicNet.Infrastructure.Packets
             PacketNumber = array.ReadUInt32();
 
             Length = Length - 4;
+
+            this.DecodeFrames(array);
         }
 
         public override byte[] Encode()
         {
+            byte[] frames = EncodeFrames();
+
             List<byte> result = new List<byte>();
             result.Add(Type);
             result.AddRange(ByteUtilities.GetBytes(Version));
@@ -64,11 +68,12 @@ namespace QuicNet.Infrastructure.Packets
                 result.Add(SourceConnectionId);
 
             byte[] tokenLength = new VariableInteger(0);
-            byte[] length = new VariableInteger(4);
+            byte[] length = new VariableInteger(4 + (UInt64)frames.Length);
 
             result.AddRange(tokenLength);
             result.AddRange(length);
             result.AddRange(ByteUtilities.GetBytes(PacketNumber));
+            result.AddRange(frames);
 
             return result.ToArray();
         }

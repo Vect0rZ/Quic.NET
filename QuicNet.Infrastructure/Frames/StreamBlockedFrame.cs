@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuickNet.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,7 @@ namespace QuicNet.Infrastructure.Frames
     {
         public override byte Type => 0x09;
 
-        public override void Decode(byte[] packet)
+        public override void Decode(ByteArray array)
         {
             throw new NotImplementedException();
         }
