@@ -6,6 +6,12 @@ namespace QuicNet.Infrastructure.Settings
 {
     public class QuicSettings
     {
+
+        /// <summary>
+        /// Path Maximum Transmission Unit. Indicates the mandatory initial packet capacity, and the maximum UDP packet capacity.
+        /// </summary>
+        public const int PMTU = 1200;
+
         /// <summary>
         /// Does the server want the first connected client to decide it's initial connection id?
         /// </summary>

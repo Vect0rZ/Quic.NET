@@ -35,6 +35,9 @@ namespace QuicNet.Infrastructure.Packets
                     break;
             }
 
+            if (result == null)
+                return null;
+
             result.Decode(data);
 
             return result;

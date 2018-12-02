@@ -24,6 +24,11 @@ namespace QuicNet.Infrastructure.Packets
             _frames.Add(frame);
         }
 
+        public virtual List<Frame> GetFrames()
+        {
+            return _frames;
+        }
+
         public virtual void DecodeFrames(ByteArray array)
         {
             FrameFactory factory = new FrameFactory(array);

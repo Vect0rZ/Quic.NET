@@ -19,6 +19,13 @@ namespace QuicNet.Infrastructure.Connections
 
         private static Dictionary<UInt32, QuicConnection> _pool = new Dictionary<UInt32, QuicConnection>();
 
+        /// <summary>
+        /// Adds a connection to the connection pool.
+        /// For now assume that the client connection id is valid, and just send it back.
+        /// Later this should change in a way that the server validates, and regenerates a connection Id.
+        /// </summary>
+        /// <param name="id">Connection Id</param>
+        /// <returns></returns>
         public static bool AddConnection(UInt32 id)
         {
             if (_pool.ContainsKey(id))

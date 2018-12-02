@@ -34,9 +34,18 @@ namespace QuickNet.Console
             byte[] data = packet.Encode();
             packet.Decode(data);
 
-           
             byte[] ccfData = frame.Encode();
             frame.Decode(new ByteArray(ccfData));
+
+            string b64 = ToBase64(data);
+
+            QuicListener listener = new QuicListener();
+            listener.Start();
+        }
+
+        static string ToBase64(byte[] data)
+        {
+            return Convert.ToBase64String(data);
         }
     }
 }

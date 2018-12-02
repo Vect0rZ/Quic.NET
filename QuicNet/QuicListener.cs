@@ -31,14 +31,19 @@ namespace QuicNet
 
         public void Start()
         {
-            
+            Receive();
         }
 
-        public byte[] Receive()
+        public void Receive()
         {
             byte[] data = _client.Receive(ref _endPoint);
 
             Packet packet = _unpacker.Unpack(data);
+
+            // Disgard unknown packets
+            if (packet == null)
+                return;
+
             // TODO: Validate packet before dispatching
             Packet result = _dispatcher.Dispatch(packet);
 
@@ -47,9 +52,6 @@ namespace QuicNet
             {
                 
             }
-
-
-            return data;
         }
     }
 }
