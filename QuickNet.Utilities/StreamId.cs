@@ -28,6 +28,16 @@ namespace QuickNet.Utilities
             _type = type;
         }
 
+        public static implicit operator byte[](StreamId id)
+        {
+            return Encode(id.Value, id.Type);
+        }
+
+        public static implicit operator StreamId(byte[] data)
+        {
+            return Decode(data);
+        }
+
         public static byte[] Encode(UInt64 id, StreamType type)
         {
             UInt64 identifier = id << 2 | (UInt64)type;
