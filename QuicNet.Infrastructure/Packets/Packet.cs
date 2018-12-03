@@ -31,16 +31,15 @@ namespace QuicNet.Infrastructure.Packets
 
         public virtual void DecodeFrames(ByteArray array)
         {
-            FrameFactory factory = new FrameFactory(array);
+            FrameParser factory = new FrameParser(array);
             Frame result;
             while (array.HasData())
             {
                 result = factory.GetFrame();
-                if (result == null)
-                {
-                    // TODO: Handle broken frames.
-                }
-                _frames.Add(result);
+                if (result != null)
+                    _frames.Add(result);
+
+                // TODO: Possibily handle broken frames.
             }
         }
 

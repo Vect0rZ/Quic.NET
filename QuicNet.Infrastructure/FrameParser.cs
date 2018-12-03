@@ -8,11 +8,11 @@ using System.Threading.Tasks;
 
 namespace QuicNet.Infrastructure
 {
-    public class FrameFactory
+    public class FrameParser
     {
         private ByteArray _array;
 
-        public FrameFactory(ByteArray array)
+        public FrameParser(ByteArray array)
         {
             _array = array;
         }
@@ -25,6 +25,7 @@ namespace QuicNet.Infrastructure
             {
                 case 0x00: result = new PaddingFrame(); break;
                 case 0x02: result = new ConnectionCloseFrame(); break;
+                case 0x06: result = new MaxStreamIdFrame(); break;
                 default: result = null; break;
             }
 

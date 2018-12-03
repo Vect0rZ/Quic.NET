@@ -45,7 +45,7 @@
     <Compile Include="Connections\QuicConnection.cs" />
     <Compile Include="Dispatcher.cs" />
     <Compile Include="ErrorCodes.cs" />
-    <Compile Include="FrameFactory.cs" />
+    <Compile Include="FrameParser.cs" />
     <Compile Include="Frames\AckFrame.cs" />
     <Compile Include="Frames\ApplicationCloseFrame.cs" />
     <Compile Include="Frames\BlockedFrame.cs" />
