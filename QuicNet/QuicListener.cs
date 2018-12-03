@@ -20,10 +20,10 @@ namespace QuicNet
         private PacketCreator _packetCreator;
         private Dispatcher _dispatcher;
 
-        public QuicListener()
+        public QuicListener(int port)
         {
-            _endPoint = new IPEndPoint(IPAddress.Any, 11000);
-            _client = new UdpClient(11000);
+            _endPoint = new IPEndPoint(IPAddress.Any, port);
+            _client = new UdpClient(port);
             _unpacker = new Unpacker();
             _packetCreator = new PacketCreator();
             _dispatcher = new Dispatcher(_packetCreator);
