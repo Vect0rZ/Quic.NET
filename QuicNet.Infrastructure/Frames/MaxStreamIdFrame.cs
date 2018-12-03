@@ -10,15 +10,33 @@ namespace QuicNet.Infrastructure.Frames
     public class MaxStreamIdFrame : Frame
     {
         public override byte Type => 0x06;
+        public StreamId StreamId { get; set; }
+
+        public MaxStreamIdFrame()
+        {
+
+        }
+
+        public MaxStreamIdFrame(UInt64 maximumStreamId, StreamType appliesTo)
+        {
+            StreamId = new StreamId(maximumStreamId, appliesTo);
+        }
 
         public override void Decode(ByteArray array)
         {
-            throw new NotImplementedException();
+            byte type = array.ReadByte();
+            StreamId = array.ReadStreamId();
         }
 
         public override byte[] Encode()
         {
-            throw new NotImplementedException();
+            List<byte> result = new List<byte>();
+            result.Add(Type);
+
+            byte[] streamId = StreamId;
+            result.AddRange(streamId);
+
+            return result.ToArray();
         }
     }
 }

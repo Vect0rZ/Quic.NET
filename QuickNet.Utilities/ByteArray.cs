@@ -80,6 +80,14 @@ namespace QuickNet.Utilities
             return bytes;
         }
 
+        public StreamId ReadStreamId()
+        {
+            byte[] streamId = ReadBytes(8);
+            StreamId result = streamId;
+
+            return result;
+        }
+
         public bool HasData()
         {
             return _offset < _length;
