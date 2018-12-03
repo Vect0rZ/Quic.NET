@@ -39,6 +39,10 @@ namespace QuickNet.Console
 
             string b64 = ToBase64(data);
 
+            StreamId streamId;
+            byte[] streamIdData = StreamId.Encode(123, StreamType.ClientUnidirectional);
+            streamId = StreamId.Decode(streamIdData);
+
             QuicListener listener = new QuicListener(11000);
             listener.Start();
         }

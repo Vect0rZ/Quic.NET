@@ -81,7 +81,7 @@
     <Compile Include="Settings\QuicSettings.cs" />
     <Compile Include="Settings\QuicVersion.cs" />
     <Compile Include="Streams\QuicStream.cs" />
-    <Compile Include="Streams\Stream.cs" />
+    <Compile Include="Streams\StreamState.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QuickNet.Utilities\QuickNet.Utilities.csproj">
