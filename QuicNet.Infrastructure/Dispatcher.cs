@@ -25,6 +25,23 @@ namespace QuicNet.Infrastructure
             // Initial connection
             if (packet is InitialPacket)
                 result = ProcessInitialPacket(packet);
+            if (packet is ShortHeaderPacket)
+                result = ProcessShortHeaderPacket(packet);
+
+            return result;
+        }
+
+        private Packet ProcessShortHeaderPacket(Packet packet)
+        {
+            Packet result = null;
+
+            ShortHeaderPacket shp = (ShortHeaderPacket)packet;
+
+            QuicConnection connection = ConnectionPool.Find(shp.DestinationConnectionId);
+            if (connection == null)
+                return null; // TODO: Figure out if the packet should be discarded in that case?
+
+            result = connection.ProcessFrames(shp.GetFrames());
 
             return result;
         }

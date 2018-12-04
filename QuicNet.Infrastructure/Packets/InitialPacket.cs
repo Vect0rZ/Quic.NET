@@ -16,7 +16,6 @@ namespace QuicNet.Infrastructure.Packets
         public byte[] Token { get; set; }
         public VariableInteger Length { get; set; }
         public UInt32 PacketNumber { get; set; }
-        public byte[] Payload { get; set; }
 
         public InitialPacket()
         {

@@ -1,4 +1,5 @@
 ﻿using QuickNet.Utilities;
+using QuicNet.Infrastructure.Connections;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -13,9 +14,12 @@ namespace QuicNet.Infrastructure.Streams
         public StreamState State { get; set; }
         public StreamId StreamId { get; }
 
-        public QuicStream(StreamId streamId)
+        private QuicConnection _connection;
+
+        public QuicStream(QuicConnection connection, StreamId streamId)
         {
             StreamId = streamId;
+            _connection = connection;
         }
     }
 }

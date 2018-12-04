@@ -38,5 +38,13 @@ namespace QuicNet.Infrastructure.Connections
 
             return true;
         }
+
+        public static QuicConnection Find(UInt32 id)
+        {
+            if (_pool.ContainsKey(id) == false)
+                return null;
+
+            return _pool[id];
+        }
     }
 }
