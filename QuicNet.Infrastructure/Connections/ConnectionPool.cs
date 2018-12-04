@@ -19,6 +19,8 @@ namespace QuicNet.Infrastructure.Connections
 
         private static Dictionary<UInt32, QuicConnection> _pool = new Dictionary<UInt32, QuicConnection>();
 
+        private static List<QuicConnection> _draining = new List<QuicConnection>();
+
         /// <summary>
         /// Adds a connection to the connection pool.
         /// For now assume that the client connection id is valid, and just send it back.

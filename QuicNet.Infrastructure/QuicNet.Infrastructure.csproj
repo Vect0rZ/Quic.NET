@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Connections\ConnectionPool.cs" />
+    <Compile Include="Connections\ConnectionState.cs" />
     <Compile Include="Connections\QuicConnection.cs" />
     <Compile Include="Dispatcher.cs" />
     <Compile Include="ErrorCodes.cs" />

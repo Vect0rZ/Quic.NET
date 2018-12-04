@@ -30,9 +30,8 @@ namespace QuicNet.Infrastructure.Packets
             PacketType type = GetPacketType(data);
             switch(type)
             {
-                case PacketType.InitialPacket:
-                    result = new InitialPacket();
-                    break;
+                case PacketType.InitialPacket: result = new InitialPacket(); break;
+                case PacketType.ShortHeaderPacket: result = new ShortHeaderPacket(); break;
             }
 
             if (result == null)

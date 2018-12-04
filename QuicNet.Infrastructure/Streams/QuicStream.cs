@@ -1,5 +1,6 @@
 ﻿using QuickNet.Utilities;
 using QuicNet.Infrastructure.Connections;
+using QuicNet.Infrastructure.Frames;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,6 +13,7 @@ namespace QuicNet.Infrastructure.Streams
     public class QuicStream
     {
         public StreamState State { get; set; }
+        public StreamType Type { get; set; }
         public StreamId StreamId { get; }
 
         private QuicConnection _connection;
@@ -19,7 +21,13 @@ namespace QuicNet.Infrastructure.Streams
         public QuicStream(QuicConnection connection, StreamId streamId)
         {
             StreamId = streamId;
+            Type = streamId.Type;
             _connection = connection;
+        }
+
+        public void ProcessData(StreamFrame frame)
+        {
+
         }
     }
 }
