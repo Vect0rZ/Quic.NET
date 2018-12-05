@@ -1,5 +1,4 @@
 ﻿using QuicNet.Infrastructure;
-using QuicNet.Infrastructure.Connections;
 using QuicNet.Infrastructure.Packets;
 using System;
 using System.Collections.Generic;

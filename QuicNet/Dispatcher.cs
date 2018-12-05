@@ -1,5 +1,6 @@
 ﻿using QuickNet.Utilities;
-using QuicNet.Infrastructure.Connections;
+using QuicNet.Connections;
+using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.Packets;
 using QuicNet.Infrastructure.Settings;
@@ -9,7 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuicNet.Infrastructure
+namespace QuicNet
 {
     public class Dispatcher
     {
@@ -75,33 +76,6 @@ namespace QuicNet.Infrastructure
             return ip;
         }
 
-        private Packet ProcessPacketFrames(Packet packet)
-        {
-            Packet result = null;
 
-            List<Frame> frames = packet.GetFrames();
-            if (frames == null)
-                return result;
-
-            foreach (Frame frame in frames)
-            {
-
-            }
-
-            return result;
-        }
-
-        private Packet ProcessFrame(Frame frame)
-        {
-            Packet result = null;
-
-            switch (frame.Type)
-            {
-                case 0x00: break;
-                case 0x01: break;
-            }
-
-            return result;
-        }
     }
 }

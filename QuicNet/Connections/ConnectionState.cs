@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuicNet.Infrastructure.Connections
+namespace QuicNet.Connections
 {
     public enum ConnectionState
     {

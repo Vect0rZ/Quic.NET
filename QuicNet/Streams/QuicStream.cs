@@ -1,11 +1,11 @@
 ﻿using QuickNet.Utilities;
-using QuicNet.Infrastructure.Connections;
+using QuicNet.Connections;
 using QuicNet.Infrastructure.Frames;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace QuicNet.Infrastructure.Streams
+namespace QuicNet.Streams
 {
     /// <summary>
     /// Virtual multiplexing channel.

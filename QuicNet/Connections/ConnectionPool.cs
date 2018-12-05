@@ -3,7 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 
-namespace QuicNet.Infrastructure.Connections
+namespace QuicNet.Connections
 {
     /// <summary>
     /// Since UDP is a stateless protocol, the ConnectionPool is used as a Conenction Manager to 

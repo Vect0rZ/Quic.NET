@@ -40,9 +40,15 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Connections\ConnectionPool.cs" />
+    <Compile Include="Connections\ConnectionState.cs" />
+    <Compile Include="Connections\QuicConnection.cs" />
+    <Compile Include="Dispatcher.cs" />
     <Compile Include="QuicClient.cs" />
     <Compile Include="QuicListener.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Streams\QuicStream.cs" />
+    <Compile Include="Streams\StreamState.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QuickNet.Utilities\QuickNet.Utilities.csproj">

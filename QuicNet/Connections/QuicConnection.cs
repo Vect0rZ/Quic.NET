@@ -1,11 +1,11 @@
 ﻿using QuickNet.Utilities;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.Packets;
-using QuicNet.Infrastructure.Streams;
+using QuicNet.Streams;
 using System;
 using System.Collections.Generic;
 
-namespace QuicNet.Infrastructure.Connections
+namespace QuicNet.Connections
 {
     public class QuicConnection
     {

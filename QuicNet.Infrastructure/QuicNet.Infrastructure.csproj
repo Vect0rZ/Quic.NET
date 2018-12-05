@@ -41,10 +41,6 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Connections\ConnectionPool.cs" />
-    <Compile Include="Connections\ConnectionState.cs" />
-    <Compile Include="Connections\QuicConnection.cs" />
-    <Compile Include="Dispatcher.cs" />
     <Compile Include="ErrorCodes.cs" />
     <Compile Include="FrameParser.cs" />
     <Compile Include="Frames\AckFrame.cs" />
@@ -81,8 +77,6 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Settings\QuicSettings.cs" />
     <Compile Include="Settings\QuicVersion.cs" />
-    <Compile Include="Streams\QuicStream.cs" />
-    <Compile Include="Streams\StreamState.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\QuickNet.Utilities\QuickNet.Utilities.csproj">
