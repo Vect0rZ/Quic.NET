@@ -39,7 +39,7 @@ namespace QuicNet
 
             Packet packet = _unpacker.Unpack(data);
 
-            // Disgard unknown packets
+            // Discard unknown packets
             if (packet == null)
                 return;
 
