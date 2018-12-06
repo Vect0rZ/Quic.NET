@@ -1,5 +1,6 @@
 ﻿using QuickNet.Utilities;
 using QuicNet;
+using QuicNet.Context;
 using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.Packets;
@@ -45,7 +46,13 @@ namespace QuickNet.Console
             StreamId streamId = streamIdData;
 
             QuicListener listener = new QuicListener(11000);
+            listener.OnDataReceived += Listener_OnDataReceived;
             listener.Start();
+        }
+
+        private static void Listener_OnDataReceived(QuicContext obj)
+        {
+            throw new NotImplementedException();
         }
 
         static string ToBase64(byte[] data)
