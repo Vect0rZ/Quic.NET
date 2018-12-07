@@ -1,7 +1,7 @@
 <h1 align="center"> QuicNet</h1>
 <p align="center">
-    <a href="https://travis-ci.org/Vect0rZ/QUICTransportNET">
-        <img src="https://travis-ci.org/Vect0rZ/QuicNET.svg?branch=master" alt="Build Status">
+    <a href="https://travis-ci.org/Vect0rZ/Quic.NET">
+        <img src="https://travis-ci.org/Vect0rZ/Quic.NET.svg?branch=master" alt="Build Status">
     </a>
     <a href="https://semver.org/">
         <img src="https://img.shields.io/badge/semver-2.0.0-blue.svg">
