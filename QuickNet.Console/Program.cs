@@ -46,11 +46,11 @@ namespace QuickNet.Console
             StreamId streamId = streamIdData;
 
             QuicListener listener = new QuicListener(11000);
-            listener.OnDataReceived += Listener_OnDataReceived;
+            listener.OnClientConnected += Listener_OnClientConnected;
             listener.Start();
         }
 
-        private static void Listener_OnDataReceived(QuicContext obj)
+        private static void Listener_OnClientConnected(QuicContext obj)
         {
             throw new NotImplementedException();
         }

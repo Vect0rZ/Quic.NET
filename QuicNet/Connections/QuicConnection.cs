@@ -1,4 +1,5 @@
 ﻿using QuickNet.Utilities;
+using QuicNet.Context;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.Packets;
 using QuicNet.Streams;
@@ -11,13 +12,20 @@ namespace QuicNet.Connections
     {
         private ConnectionState _state;
         private Dictionary<UInt64, QuicStream> _streams;
+        private QuicContext _context;
+
         public QuicConnection(UInt32 id)
         {
             _state = ConnectionState.Open;
             _streams = new Dictionary<UInt64, QuicStream>();
         }
 
-        public Packet ProcessFrames(List<Frame> frames)
+        public void AttachContext(QuicContext context)
+        {
+            _context = context;
+        }
+
+        public void ProcessFrames(List<Frame> frames)
         {
             foreach (Frame frame in frames)
             {
@@ -26,8 +34,6 @@ namespace QuicNet.Connections
                 if (frame.Type >= 0x10 && frame.Type <= 0x17)
                     OnStreamFrame(frame);
             }
-
-            return null;
         }
 
         private void OnConnectionCloseFrame(Frame frame)

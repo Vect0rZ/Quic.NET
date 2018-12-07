@@ -23,5 +23,10 @@ namespace QuicNet.Infrastructure
         {
             return new InitialPacket();
         }
+
+        public ShortHeaderPacket CreateShortHeaderPacket()
+        {
+            return new ShortHeaderPacket();
+        }
     }
 }

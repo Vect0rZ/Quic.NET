@@ -1,4 +1,5 @@
-﻿using QuicNet.Infrastructure.Settings;
+﻿using QuicNet.Context;
+using QuicNet.Infrastructure.Settings;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -47,6 +48,16 @@ namespace QuicNet.Connections
                 return null;
 
             return _pool[id];
+        }
+
+        public static bool AttachContext(UInt32 id, QuicContext context)
+        {
+            if (_pool.ContainsKey(id) == false)
+                return false;
+
+            _pool[id].AttachContext(context);
+
+            return true;
         }
     }
 }

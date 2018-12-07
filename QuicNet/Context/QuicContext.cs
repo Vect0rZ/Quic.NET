@@ -1,20 +1,71 @@
-﻿using System;
+﻿using QuicNet.Infrastructure.Packets;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
+using System.Net.Sockets;
 using System.Text;
 using System.Threading.Tasks;
 
 namespace QuicNet.Context
 {
+    /// <summary>
+    /// Wrapper of the UdpClient to be referenced in the Connections/Streams.
+    /// </summary>
     public class QuicContext
     {
-        public IPEndPoint EndPoint { get; set; }
-        public byte[] Data { get; set; }
+        private UdpClient _client;
 
-        public QuicContext()
+        public IPEndPoint Endpoint { get; }
+        public bool IsClosed { get; private set; }
+
+        /// <summary>
+        /// Internal constructor to prevent createing the context outside the scope of Quic.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="endpoint"></param>
+        internal QuicContext(UdpClient client, IPEndPoint endpoint)
         {
+            _client = client;
+            Endpoint = endpoint;
+        }
 
+        /// <summary>
+        /// Send data to the client.
+        /// </summary>
+        /// <param name="data"></param>
+        /// <returns></returns>
+        public bool Send(byte[] data)
+        {
+            // Ignore empty packets
+            if (data == null || data.Length <= 0)
+                return true;
+
+            int result = _client.Send(data, data.Length, Endpoint);
+            if (result <= 0)
+                return false;
+
+            return true;
+        }
+
+        /// <summary>
+        /// Used to send protocol packets to the peer.
+        /// </summary>
+        /// <param name="packet"></param>
+        /// <returns></returns>
+        internal bool Send(Packet packet)
+        {
+            byte[] data = packet.Encode();
+
+            // Ignore empty packets
+            if (data == null || data.Length <= 0)
+                return true;
+
+            int result = _client.Send(data, data.Length, Endpoint);
+            if (result <= 0)
+                return false;
+
+            return true;
         }
     }
 }
