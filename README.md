@@ -6,7 +6,7 @@
     <a href="https://semver.org/">
         <img src="https://img.shields.io/badge/semver-2.0.0-blue.svg">
     </a>
-    <img src="https://img.shields.io/badge/version-0.0.0-red.svg">
+    <img src="https://img.shields.io/badge/version-0.1.0 alpha-red.svg">
 </p>
 
 # What is QuicNet?
