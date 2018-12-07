@@ -1,4 +1,5 @@
 ﻿using QuicNet.Context;
+using QuicNet.Exceptions;
 using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Packets;
 using System;
@@ -37,6 +38,7 @@ namespace QuicNet
         public void Start()
         {
             _client = new UdpClient(_port);
+            _started = true;
         }
 
         public void Close()
@@ -46,6 +48,9 @@ namespace QuicNet
 
         public void Receive()
         {
+            if (!_started)
+                throw new QuicListenerNotStartedException("Please call the Start() method before receving data.");
+
             while (true)
             {
                 IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, _port);
