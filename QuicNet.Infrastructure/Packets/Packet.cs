@@ -1,5 +1,7 @@
 ﻿using QuickNet.Utilities;
+using QuicNet.Infrastructure.Exceptions;
 using QuicNet.Infrastructure.Frames;
+using QuicNet.Infrastructure.Settings;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -33,14 +35,20 @@ namespace QuicNet.Infrastructure.Packets
         {
             FrameParser factory = new FrameParser(array);
             Frame result;
-            while (array.HasData())
+            int frames = 0;
+            while (array.HasData() && frames <= QuicSettings.MaximumFramesPerPacket)
             {
                 result = factory.GetFrame();
                 if (result != null)
                     _frames.Add(result);
 
+                frames++;
+
                 // TODO: Possibily handle broken frames.
             }
+
+            if (array.HasData())
+                throw new ProtocolException("Unexpected number of frames or possibly corrupted frame was sent.");
         }
 
         public virtual byte[] EncodeFrames()

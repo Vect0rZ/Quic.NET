@@ -36,5 +36,10 @@ namespace QuicNet.Infrastructure.Settings
         /// Should the server buffer packets that came before the initial packet?
         /// </summary>
         public const bool ShouldBufferPacketsBeforeConnection = false;
+
+        /// <summary>
+        /// Limit the maximum number of frames a packet can carry.
+        /// </summary>
+        public const int MaximumFramesPerPacket = 10;
     }
 }
