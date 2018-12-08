@@ -12,7 +12,7 @@ namespace QuicNet.Connections
     {
         private ConnectionState _state;
         private Dictionary<UInt64, QuicStream> _streams;
-        private QuicContext _context;
+        public QuicContext Context { get; private set; }
 
         public QuicConnection(UInt32 id)
         {
@@ -22,7 +22,7 @@ namespace QuicNet.Connections
 
         public void AttachContext(QuicContext context)
         {
-            _context = context;
+            Context = context;
         }
 
         public void ProcessFrames(List<Frame> frames)

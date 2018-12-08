@@ -1,4 +1,6 @@
-﻿using QuicNet.Infrastructure.Packets;
+﻿using QuickNet.Utilities;
+using QuicNet.Infrastructure.Packets;
+using QuicNet.Streams;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +20,7 @@ namespace QuicNet.Context
 
         public IPEndPoint Endpoint { get; }
         public bool IsClosed { get; private set; }
+        public event Action<byte[]> OnDataReceived;
 
         /// <summary>
         /// Internal constructor to prevent createing the context outside the scope of Quic.
@@ -28,6 +31,11 @@ namespace QuicNet.Context
         {
             _client = client;
             Endpoint = endpoint;
+        }
+
+        internal void DataReceived(byte[] data, StreamId id)
+        {
+            OnDataReceived?.Invoke(data);
         }
 
         /// <summary>

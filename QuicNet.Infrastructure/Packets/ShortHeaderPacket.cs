@@ -15,6 +15,7 @@ namespace QuicNet.Infrastructure.Packets
         {
             ByteArray array = new ByteArray(packet);
             byte type = array.ReadByte();
+            DestinationConnectionId = array.ReadByte();
             PacketNumber = array.ReadUInt32();
 
             DecodeFrames(array);
@@ -26,6 +27,7 @@ namespace QuicNet.Infrastructure.Packets
 
             List<byte> result = new List<byte>();
             result.Add(Type);
+            result.Add(DestinationConnectionId);
             result.AddRange(ByteUtilities.GetBytes(PacketNumber));
             result.AddRange(frames);
 

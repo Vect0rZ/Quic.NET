@@ -27,7 +27,8 @@ namespace QuicNet.Streams
 
         public void ProcessData(StreamFrame frame)
         {
-
+            byte[] data = frame.StreamData;
+            _connection.Context.DataReceived(data, StreamId);
         }
     }
 }

@@ -41,6 +41,7 @@ namespace QuicNet
         {
             _client = new UdpClient(_port);
             _started = true;
+            Receive();
         }
 
         public void Close()
@@ -48,7 +49,7 @@ namespace QuicNet
             _client.Close();
         }
 
-        public void Receive()
+        private void Receive()
         {
             if (!_started)
                 throw new QuicListenerNotStartedException("Please call the Start() method before receving data.");

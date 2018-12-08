@@ -31,16 +31,24 @@ namespace QuickNet.Console
             };
             ConnectionCloseFrame frame = new ConnectionCloseFrame(ErrorCode.SERVER_BUSY, "The server is too busy to process your request.");
             MaxStreamIdFrame msidframe = new MaxStreamIdFrame(144123, StreamType.ClientUnidirectional);
-            packet.AttachFrame(frame);
+            //packet.AttachFrame(frame);
             packet.AttachFrame(msidframe);
 
             byte[] data = packet.Encode();
+            string b64 = ToBase64(data);
+
+            byte[] shpdata = new byte[] { 1, 1, 2, 3, 5, 8, 13, 21 };
+            ShortHeaderPacket shp = new ShortHeaderPacket();
+            shp.DestinationConnectionId = 124;
+            shp.PacketNumber = 2;
+            shp.AttachFrame(new StreamFrame() { StreamId = 1, Length = new VariableInteger((UInt64)shpdata.Length), StreamData = shpdata, Offset = 0 });
+
+            string shpb64 = ToBase64(shp.Encode());
+
             packet.Decode(data);
 
             byte[] ccfData = frame.Encode();
             frame.Decode(new ByteArray(ccfData));
-
-            string b64 = ToBase64(data);
 
             byte[] streamIdData = new StreamId(123, StreamType.ClientUnidirectional);
             StreamId streamId = streamIdData;
@@ -52,7 +60,17 @@ namespace QuickNet.Console
 
         private static void Listener_OnClientConnected(QuicContext obj)
         {
-            throw new NotImplementedException();
+            System.Console.WriteLine("Client connected.");
+            obj.OnDataReceived += Obj_OnDataReceived;
+        }
+
+        private static void Obj_OnDataReceived(byte[] obj)
+        {
+            System.Console.WriteLine("Data received");
+            foreach (byte b in obj)
+            {
+                System.Console.Write(string.Format("{0},", b));
+            }
         }
 
         static string ToBase64(byte[] data)
