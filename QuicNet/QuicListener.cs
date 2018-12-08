@@ -52,7 +52,7 @@ namespace QuicNet
         {
             if (!_started)
                 throw new QuicListenerNotStartedException("Please call the Start() method before receving data.");
-
+            
             while (true)
             {
                 IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, _port);
@@ -119,7 +119,7 @@ namespace QuicNet
                 QuicContext context = new QuicContext(_client, endPoint);
                 ConnectionPool.AttachContext(cast.SourceConnectionId, context);
 
-                OnClientConnected(context);
+                OnClientConnected?.Invoke(context);
             }
         }
 
