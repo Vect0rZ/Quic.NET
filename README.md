@@ -9,6 +9,16 @@
     <img src="https://img.shields.io/badge/version-0.1.0 alpha-red.svg">
 </p>
 
+# Table of contents
+   - [What is QuicNet](#what-is-quicnet)
+   - [What is QUIC](#what-is-quic)
+      * [Connections](#connections)
+      * [Streams](#streams)
+      * [Packet](#packet)
+      * [Frame](#frame)
+   - [Contributing](#contributing)
+   - [More](#more)
+
 # What is QuicNet?
 
 QuicNet is a .NET implementation of the QUIC protocol mentioned below.
