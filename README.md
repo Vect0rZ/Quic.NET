@@ -53,7 +53,7 @@ namespace QuickNet.Console
         static void OnClientConnected(QuicContext context)
         {
             System.Console.WriteLine("Client connected.");
-            context.OnDataReceived += OnDataReceived;        // Attach a callback when the client reveices data
+            context.OnDataReceived += OnDataReceived;        // Attach a callback when the server reveices data
         }
         static void OnDataReceived(byte[] data)
         {
