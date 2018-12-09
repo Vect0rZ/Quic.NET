@@ -95,10 +95,15 @@ namespace QuicNet
                 return;
             }
 
-
             InitialPacket cast = packet as InitialPacket;
             InitialPacket ip = _packetCreator.CreateInitialPacket(0, cast.SourceConnectionId);
-            if (ConnectionPool.AddConnection(cast.SourceConnectionId) == true)
+
+            // Protocol violation if the initial packet is smaller than the PMTU. (pt. 14 / 16th draft)
+            if (cast.Encode().Length < QuicSettings.PMTU)
+            {
+                ip.AttachFrame(new ConnectionCloseFrame(ErrorCode.PROTOCOL_VIOLATION, "PMTU have not been reached."));
+            }
+            else if (ConnectionPool.AddConnection(cast.SourceConnectionId) == true)
             {
                 // We're including the maximum possible stream id during the connection handshake. (4.5 / 16th draft)
                 ip.AttachFrame(new MaxStreamIdFrame(QuicSettings.MaximumStreamId, StreamType.ServerBidirectional));

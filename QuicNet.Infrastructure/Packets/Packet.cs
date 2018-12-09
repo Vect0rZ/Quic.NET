@@ -36,7 +36,7 @@ namespace QuicNet.Infrastructure.Packets
             FrameParser factory = new FrameParser(array);
             Frame result;
             int frames = 0;
-            while (array.HasData() && frames <= QuicSettings.MaximumFramesPerPacket)
+            while (array.HasData() && frames <= QuicSettings.PMTU)
             {
                 result = factory.GetFrame();
                 if (result != null)

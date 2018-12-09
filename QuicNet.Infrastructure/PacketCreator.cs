@@ -1,4 +1,5 @@
-﻿using QuicNet.Infrastructure.Packets;
+﻿using QuicNet.Infrastructure.Frames;
+using QuicNet.Infrastructure.Packets;
 using QuicNet.Infrastructure.Settings;
 using System;
 using System.Collections.Generic;
@@ -23,6 +24,10 @@ namespace QuicNet.Infrastructure
             packet.Version = QuicVersion.CurrentVersion;
 
             int length = packet.Encode().Length;
+            int padding = QuicSettings.PMTU - length;
+
+            for (int i = 0; i < padding; i++)
+                packet.AttachFrame(new PaddingFrame());
 
             return packet;
         }

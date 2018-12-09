@@ -29,6 +29,9 @@ namespace QuickNet.Console
                 PacketNumber = 777521,
                 TokenLength = 0
             };
+
+            packet = new PacketCreator().CreateInitialPacket(124, 0);
+
             ConnectionCloseFrame frame = new ConnectionCloseFrame(ErrorCode.SERVER_BUSY, "The server is too busy to process your request.");
             MaxStreamIdFrame msidframe = new MaxStreamIdFrame(144123, StreamType.ClientUnidirectional);
             //packet.AttachFrame(frame);
