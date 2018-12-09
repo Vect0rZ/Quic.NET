@@ -1,4 +1,5 @@
 ﻿using QuicNet.Infrastructure.Packets;
+using QuicNet.Infrastructure.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -12,6 +13,18 @@ namespace QuicNet.Infrastructure
         public PacketCreator()
         {
 
+        }
+
+        public InitialPacket CreateInitialPacket(byte sourceConnectionId, byte destinationConnectionId)
+        {
+            InitialPacket packet = new InitialPacket();
+            packet.SourceConnectionId = sourceConnectionId;
+            packet.DestinationConnectionId = destinationConnectionId;
+            packet.Version = QuicVersion.CurrentVersion;
+
+            int length = packet.Encode().Length;
+
+            return packet;
         }
 
         public VersionNegotiationPacket CreateVersionNegotiationPacket()

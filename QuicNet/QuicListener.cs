@@ -95,10 +95,9 @@ namespace QuicNet
                 return;
             }
 
-            InitialPacket ip = new InitialPacket();
-            ip.DestinationConnectionId = ip.SourceConnectionId;
 
             InitialPacket cast = packet as InitialPacket;
+            InitialPacket ip = _packetCreator.CreateInitialPacket(0, cast.SourceConnectionId);
             if (ConnectionPool.AddConnection(cast.SourceConnectionId) == true)
             {
                 // We're including the maximum possible stream id during the connection handshake. (4.5 / 16th draft)
