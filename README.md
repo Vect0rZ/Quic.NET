@@ -11,6 +11,9 @@
 
 # Table of contents
    - [What is QuicNet](#what-is-quicnet)
+   - [Usage](#usage)
+      * [Server](#server)
+      * [Client](#client)
    - [What is QUIC](#what-is-quic)
       * [Connections](#connections)
       * [Streams](#streams)
@@ -27,6 +30,44 @@ and does NOT YET offer implementation of the following related drafts:
 
 * [quic-tls](https://datatracker.ietf.org/doc/draft-ietf-quic-tls/?include_text=1)
 * [quic-recovery](https://datatracker.ietf.org/doc/draft-ietf-quic-recovery/?include_text=1)
+
+# Usage
+Code examples of library usage
+
+## Server
+```csharp
+using System;
+using QuicNet;
+using QuicNet.Context;
+
+namespace QuickNet.Console
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            QuicListener listener = new QuicListener(1234);  // Start a new listener on port 1234
+            listener.OnClientConnected += OnClientConnected; // Attach callback when a new client is connected
+            listener.Start();                                // Start listening
+        }
+        static void OnClientConnected(QuicContext context)
+        {
+            System.Console.WriteLine("Client connected.");
+            context.OnDataReceived += OnDataReceived;        // Attach a callback when the client reveices data
+        }
+        static void OnDataReceived(byte[] data)
+        {
+            string result = Convert.ToBase64String(data);    // Data
+            System.Console.WriteLine("Received data: {0}", result);
+        }
+    }
+}
+```
+
+## Client
+```
+WIP
+```
 
 # What is QUIC?
 
