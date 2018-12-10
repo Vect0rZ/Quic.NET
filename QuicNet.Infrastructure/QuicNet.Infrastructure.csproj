@@ -65,6 +65,7 @@
     <Compile Include="Frames\StreamBlockedFrame.cs" />
     <Compile Include="Frames\StreamFrame.cs" />
     <Compile Include="Frames\StreamIdBlockedFrame.cs" />
+    <Compile Include="NumberSpace.cs" />
     <Compile Include="PacketCreator.cs" />
     <Compile Include="Packets\HandshakePacket.cs" />
     <Compile Include="Packets\InitialPacket.cs" />
