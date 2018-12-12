@@ -19,6 +19,7 @@ namespace QuicNet.Infrastructure
         public InitialPacket CreateInitialPacket(byte sourceConnectionId, byte destinationConnectionId)
         {
             InitialPacket packet = new InitialPacket();
+            packet.PacketNumber = 0;
             packet.SourceConnectionId = sourceConnectionId;
             packet.DestinationConnectionId = destinationConnectionId;
             packet.Version = QuicVersion.CurrentVersion;
