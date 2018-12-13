@@ -14,7 +14,7 @@
 
 # Table of contents
    - [What is QuicNet](#what-is-quicnet)
-   - [Usage](#usage)
+   - [Get started](#get-started)
       * [Server](#server)
       * [Client](#client)
    - [What is QUIC](#what-is-quic)
@@ -34,8 +34,8 @@ and does NOT YET offer implementation of the following related drafts:
 * [quic-tls](https://datatracker.ietf.org/doc/draft-ietf-quic-tls/?include_text=1)
 * [quic-recovery](https://datatracker.ietf.org/doc/draft-ietf-quic-recovery/?include_text=1)
 
-# Usage
-Code examples of library usage
+# Get started
+Minimal working examples
 
 ## Server
 ```csharp
