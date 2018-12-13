@@ -1,5 +1,5 @@
 <p align="center">
-    <img src="https://i.imgur.com/6NAM8P2.png"></img>
+    <img src="https://i.imgur.com/lPrX6AU.png"></img>
 </p>
 <p align="center">
     <a href="https://travis-ci.org/Vect0rZ/Quic.NET">
