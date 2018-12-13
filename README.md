@@ -1,4 +1,6 @@
-<h1 align="center"> QuicNet</h1>
+<p align="center">
+    <img src="https://i.imgur.com/6NAM8P2.png"></img>
+</p>
 <p align="center">
     <a href="https://travis-ci.org/Vect0rZ/Quic.NET">
         <img src="https://travis-ci.org/Vect0rZ/Quic.NET.svg?branch=master" alt="Build Status">
@@ -8,6 +10,7 @@
     </a>
     <img src="https://img.shields.io/badge/version-0.1.1 alpha-red.svg">
 </p>
+<h1 align="center"> QuicNet
 
 # Table of contents
    - [What is QuicNet](#what-is-quicnet)
