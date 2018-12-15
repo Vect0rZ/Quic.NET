@@ -41,6 +41,13 @@ namespace QuicNet.Infrastructure.Frames
 
         public override byte[] Encode()
         {
+            if (Offset != null && Offset.Value > 0)
+                ActualType = (byte)(ActualType & 0x04);
+            if (Length != null && Length.Value > 0)
+                ActualType = (byte)(ActualType & 0x02);
+            if (EndOfStream == true)
+                ActualType = (byte)(ActualType & 0x01);
+
             byte OFF_BIT = (byte)(ActualType & 0x04);
             byte LEN_BIT = (byte)(ActualType & 0x02);
             byte FIN_BIT = (byte)(ActualType & 0x01);
@@ -65,13 +72,6 @@ namespace QuicNet.Infrastructure.Frames
             result.AddRange(StreamData);
 
             return result.ToArray();
-        }
-
-        public void SetFlags(bool off, bool len, bool fin)
-        {
-            ActualType = off ? (byte)(ActualType & 0x04) : ActualType;
-            ActualType = len ? (byte)(ActualType & 0x02) : ActualType;
-            ActualType = fin ? (byte)(ActualType & 0x01) : ActualType;
         }
     }
 }
