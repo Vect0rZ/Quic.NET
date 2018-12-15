@@ -20,7 +20,8 @@ namespace QuicNet.Context
 
         public IPEndPoint Endpoint { get; }
         public bool IsClosed { get; private set; }
-        public event Action<byte[]> OnDataReceived;
+        public event Action<QuicContext> OnDataReceived;
+        public byte[] Data { get; set; }
 
         /// <summary>
         /// Internal constructor to prevent createing the context outside the scope of Quic.
@@ -31,11 +32,13 @@ namespace QuicNet.Context
         {
             _client = client;
             Endpoint = endpoint;
+            Data = new byte[0];
         }
 
         internal void DataReceived(byte[] data, StreamId id)
         {
-            OnDataReceived?.Invoke(data);
+            this.Data = data;
+            OnDataReceived?.Invoke(this);
         }
 
         /// <summary>

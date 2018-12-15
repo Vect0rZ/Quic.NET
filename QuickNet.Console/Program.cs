@@ -71,10 +71,10 @@ namespace QuickNet.Console
             obj.OnDataReceived += Obj_OnDataReceived;
         }
 
-        private static void Obj_OnDataReceived(byte[] obj)
+        private static void Obj_OnDataReceived(QuicContext obj)
         {
             System.Console.WriteLine("Data received");
-            foreach (byte b in obj)
+            foreach (byte b in obj.Data)
             {
                 System.Console.Write(string.Format("{0},", b));
             }
