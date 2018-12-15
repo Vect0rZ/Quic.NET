@@ -18,6 +18,7 @@ namespace QuicNet.Infrastructure.Frames
         public byte[] StreamData { get; set; }
         public StreamId ConvertedStreamId { get; set; }
         public bool EndOfStream { get; set; }
+        public bool HasOffset { get; set; }
 
         public override void Decode(ByteArray array)
         {
