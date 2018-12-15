@@ -29,6 +29,8 @@ namespace QuicNet.Connections
         {
             foreach (Frame frame in frames)
             {
+                if (frame.Type == 0x01)
+                    OnRstStreamFrame(frame);
                 if (frame.Type == 0x02)
                     OnConnectionCloseFrame(frame);
                 if (frame.Type >= 0x10 && frame.Type <= 0x17)
@@ -39,6 +41,16 @@ namespace QuicNet.Connections
         private void OnConnectionCloseFrame(Frame frame)
         {
             _state = ConnectionState.Draining;
+        }
+
+        private void OnRstStreamFrame(Frame frame)
+        {
+            RSTStreamFrame rsf = (RSTStreamFrame)frame;
+            if (_streams.ContainsKey(rsf.StreamId))
+            {
+                QuicStream stream = _streams[rsf.StreamId];
+                stream.ResetStream(rsf);
+            }
         }
 
         private void OnStreamFrame(Frame frame)

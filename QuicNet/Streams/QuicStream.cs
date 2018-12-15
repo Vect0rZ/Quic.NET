@@ -27,8 +27,17 @@ namespace QuicNet.Streams
             _connection = connection;
         }
 
+        public void ResetStream(RSTStreamFrame frame)
+        {
+            State = StreamState.ResetRecvd;
+        }
+
         public void ProcessData(StreamFrame frame)
         {
+            // Do not accept data if the stream is reset.
+            if (State == StreamState.ResetRecvd)
+                return;
+
             byte[] data = frame.StreamData;
             if (frame.Offset != null)
             {

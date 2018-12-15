@@ -24,6 +24,7 @@ namespace QuicNet.Infrastructure
             switch(frameType)
             {
                 case 0x00: result = new PaddingFrame(); break;
+                case 0x01: result = new RSTStreamFrame(); break;
                 case 0x02: result = new ConnectionCloseFrame(); break;
                 case 0x06: result = new MaxStreamIdFrame(); break;
                 case 0x10: result = new StreamFrame(); break;
