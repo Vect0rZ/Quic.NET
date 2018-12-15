@@ -15,7 +15,6 @@ namespace QuicNet.Streams
     {
         private SortedList<UInt64, byte[]> _data = new SortedList<ulong, byte[]>();
         private QuicConnection _connection;
-        private bool _finReceived;
         public StreamState State { get; set; }
         public StreamType Type { get; set; }
         public StreamId StreamId { get; }
@@ -26,7 +25,6 @@ namespace QuicNet.Streams
             Type = streamId.Type;
 
             _connection = connection;
-            _finReceived = false;
         }
 
         public void ProcessData(StreamFrame frame)
@@ -45,9 +43,9 @@ namespace QuicNet.Streams
             // Either this frame marks the end of the stream,
             // or fin frame came before the data frames
             if (frame.EndOfStream)
-                _finReceived = true;
+                State = StreamState.SizeKnown;
 
-            if (_finReceived && IsStreamFull())
+            if (State == StreamState.SizeKnown && IsStreamFull())
                 _connection.Context.DataReceived(_data.SelectMany(v => v.Value).ToArray(), StreamId);
         }
 
