@@ -40,11 +40,15 @@ namespace QuickNet.Console
             byte[] data = packet.Encode();
             string b64 = ToBase64(data);
 
-            byte[] shpdata = new byte[] { 1, 1, 2, 3, 5, 8, 13, 21 };
+            byte[] shpdata1 = new byte[] { 1, 1, 2, 3, 5, 8 };
+            byte[] shpdata2 = new byte[] { 13, 21, 34, 55, 89, 144 };
+
             ShortHeaderPacket shp = new ShortHeaderPacket();
             shp.DestinationConnectionId = 124;
             shp.PacketNumber = 2;
-            shp.AttachFrame(new StreamFrame() { StreamId = 1, Length = new VariableInteger((UInt64)shpdata.Length), StreamData = shpdata, Offset = 0 });
+
+            shp.AttachFrame(new StreamFrame() { StreamId = 1, Length = new VariableInteger((UInt64)shpdata2.Length), StreamData = shpdata2, Offset = 6, EndOfStream = true });
+            shp.AttachFrame(new StreamFrame() { StreamId = 1, Length = new VariableInteger((UInt64)shpdata1.Length), StreamData = shpdata1, Offset = 0 });
 
             string shpb64 = ToBase64(shp.Encode());
 

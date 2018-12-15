@@ -13,9 +13,9 @@ namespace QuicNet.Streams
     /// </summary>
     public class QuicStream
     {
-        private SortedDictionary<UInt64, byte[]> _data = new SortedDictionary<ulong, byte[]>();
+        private SortedList<UInt64, byte[]> _data = new SortedList<ulong, byte[]>();
         private QuicConnection _connection;
-
+        private bool _finReceived;
         public StreamState State { get; set; }
         public StreamType Type { get; set; }
         public StreamId StreamId { get; }
@@ -24,11 +24,13 @@ namespace QuicNet.Streams
         {
             StreamId = streamId;
             Type = streamId.Type;
+
             _connection = connection;
+            _finReceived = false;
         }
 
         public void ProcessData(StreamFrame frame)
-        { 
+        {
             byte[] data = frame.StreamData;
             if (frame.Offset != null)
             {
@@ -39,16 +41,29 @@ namespace QuicNet.Streams
                 // TODO: Careful with duplicate 0 offset packets on the same stream. Probably PROTOCOL_VIOLATION?
                 _data.Add(0, frame.StreamData);
             }
-            
+
+            // Either this frame marks the end of the stream,
+            // or fin frame came before the data frames
             if (frame.EndOfStream)
-                _connection.Context.DataReceived(ReorderData(), StreamId);
+                _finReceived = true;
+
+            if (_finReceived && IsStreamFull())
+                _connection.Context.DataReceived(_data.SelectMany(v => v.Value).ToArray(), StreamId);
         }
 
-        private byte[] ReorderData()
+        private bool IsStreamFull()
         {
-            byte[] data = _data.Values.SelectMany(v => v).ToArray();
+            UInt64 length = 0;
 
-            return data;
+            foreach (var kvp in _data)
+            {
+                if (kvp.Key > 0 && kvp.Key != length)
+                    return false;
+
+                length = (UInt64)kvp.Value.Length;
+            }
+
+            return true;
         }
     }
 }

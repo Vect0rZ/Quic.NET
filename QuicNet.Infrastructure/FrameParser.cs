@@ -27,6 +27,13 @@ namespace QuicNet.Infrastructure
                 case 0x02: result = new ConnectionCloseFrame(); break;
                 case 0x06: result = new MaxStreamIdFrame(); break;
                 case 0x10: result = new StreamFrame(); break;
+                case 0x11: result = new StreamFrame(); break;
+                case 0x12: result = new StreamFrame(); break;
+                case 0x13: result = new StreamFrame(); break;
+                case 0x14: result = new StreamFrame(); break;
+                case 0x15: result = new StreamFrame(); break;
+                case 0x16: result = new StreamFrame(); break;
+                case 0x17: result = new StreamFrame(); break;
                 default: result = null; break;
             }
 

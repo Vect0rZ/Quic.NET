@@ -18,7 +18,6 @@ namespace QuicNet.Infrastructure.Frames
         public byte[] StreamData { get; set; }
         public StreamId ConvertedStreamId { get; set; }
         public bool EndOfStream { get; set; }
-        public bool HasOffset { get; set; }
 
         public override void Decode(ByteArray array)
         {
@@ -43,11 +42,11 @@ namespace QuicNet.Infrastructure.Frames
         public override byte[] Encode()
         {
             if (Offset != null && Offset.Value > 0)
-                ActualType = (byte)(ActualType & 0x04);
+                ActualType = (byte)(ActualType | 0x04);
             if (Length != null && Length.Value > 0)
-                ActualType = (byte)(ActualType & 0x02);
+                ActualType = (byte)(ActualType | 0x02);
             if (EndOfStream == true)
-                ActualType = (byte)(ActualType & 0x01);
+                ActualType = (byte)(ActualType | 0x01);
 
             byte OFF_BIT = (byte)(ActualType & 0x04);
             byte LEN_BIT = (byte)(ActualType & 0x02);
