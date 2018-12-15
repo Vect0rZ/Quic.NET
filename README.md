@@ -58,9 +58,9 @@ namespace QuickNet.Console
             System.Console.WriteLine("Client connected.");
             context.OnDataReceived += OnDataReceived;        // Attach a callback when the server reveices data
         }
-        static void OnDataReceived(byte[] data)
+        static void OnDataReceived(QuicContext context)
         {
-            string result = Convert.ToBase64String(data);    // Data
+            string result = Convert.ToBase64String(context.Data);   // Data
             System.Console.WriteLine("Received data: {0}", result);
         }
     }
