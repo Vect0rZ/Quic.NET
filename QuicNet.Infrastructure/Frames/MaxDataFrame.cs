@@ -9,7 +9,7 @@ namespace QuicNet.Infrastructure.Frames
 {
     public class MaxDataFrame : Frame
     {
-        public override byte Type => 0x04;
+        public override byte Type => 0x10;
 
         public override void Decode(ByteArray array)
         {

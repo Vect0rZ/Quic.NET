@@ -27,7 +27,7 @@ namespace QuicNet.Streams
             _connection = connection;
         }
 
-        public void ResetStream(RSTStreamFrame frame)
+        public void ResetStream(ResetStreamFrame frame)
         {
             State = StreamState.ResetRecvd;
         }

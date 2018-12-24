@@ -9,7 +9,7 @@ namespace QuicNet.Infrastructure.Frames
 {
     public class RetireConnectionIdFrame : Frame
     {
-        public override byte Type => 0x0d;
+        public override byte Type => 0x19;
 
         public override void Decode(ByteArray array)
         {

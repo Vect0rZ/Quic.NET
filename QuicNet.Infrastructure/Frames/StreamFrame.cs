@@ -9,9 +9,9 @@ namespace QuicNet.Infrastructure.Frames
 {
     public class StreamFrame : Frame
     {
-        private byte ActualType = 0x10;
+        private byte ActualType = 0x08;
 
-        public override byte Type => 0x10;
+        public override byte Type => 0x08;
         public VariableInteger StreamId { get; set; }
         public VariableInteger Offset { get; set; }
         public VariableInteger Length { get; set; }

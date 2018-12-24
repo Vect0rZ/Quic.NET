@@ -106,7 +106,7 @@ namespace QuicNet
             else if (ConnectionPool.AddConnection(cast.SourceConnectionId) == true)
             {
                 // We're including the maximum possible stream id during the connection handshake. (4.5 / 16th draft)
-                ip.AttachFrame(new MaxStreamIdFrame(QuicSettings.MaximumStreamId, StreamType.ServerBidirectional));
+                ip.AttachFrame(new MaxStreamsFrame(QuicSettings.MaximumStreamId, StreamType.ServerBidirectional));
             }
             else
             {
