@@ -8,30 +8,15 @@ namespace QuicNet.Infrastructure.Packets
 {
     public class Unpacker
     {
-        private Dictionary<byte, PacketType> _typeMap = new Dictionary<byte, PacketType>()
-        {
-            { 0xFF, PacketType.InitialPacket },
-            { 0xFE, PacketType.RetryPacket },
-            { 0x8E, PacketType.ShortHeaderPacket },
-            { 0x77, PacketType.LongHeaderPacket },
-            { 0x80, PacketType.VersionNegotiationPacket },
-            { 0x7D, PacketType.HandshakePacket }
-        };
-
-        public Unpacker()
-        {
-            
-        }
-
         public Packet Unpack(byte[] data)
         {
             Packet result = null;
 
-            PacketType type = GetPacketType(data);
+            QuicPacketType type = GetPacketType(data);
             switch(type)
             {
-                case PacketType.InitialPacket: result = new InitialPacket(); break;
-                case PacketType.ShortHeaderPacket: result = new ShortHeaderPacket(); break;
+                case QuicPacketType.Initial: result = new InitialPacket(); break;
+                case QuicPacketType.ShortHeader: result = new ShortHeaderPacket(); break;
             }
 
             if (result == null)
@@ -42,16 +27,24 @@ namespace QuicNet.Infrastructure.Packets
             return result;
         }
 
-        public PacketType GetPacketType(byte[] data)
+        public QuicPacketType GetPacketType(byte[] data)
         {
             if (data == null || data.Length <= 0)
-                return PacketType.BrokenPacket;
+                return QuicPacketType.Broken;
+
             byte type = data[0];
 
-            if (_typeMap.ContainsKey(type) == false)
-                return PacketType.BrokenPacket;
+            // TODO: Understand how to differentiate between Initial packet and Long Header Packet,
+            // and if there is any need to do so, or the LHP is just used for deriving the Initial packet.
 
-            return _typeMap[type];            
+            if ((type & 0xC0) == 0xC0)
+                return QuicPacketType.Initial;
+            if ((type & 0x40) == 0x40)
+                return QuicPacketType.ShortHeader;
+            if ((type & 0x80) == 0x80)
+                return QuicPacketType.VersionNegotiation;
+            
+            return QuicPacketType.Broken;            
         }
     }
 }

@@ -7,7 +7,7 @@ namespace QuicNet.Infrastructure.Packets
 {
     public class ShortHeaderPacket : Packet
     {
-        public override byte Type => 0x8E; // 1000 1110;
+        public override byte Type => 0x43; // 0100 0011;
         public byte DestinationConnectionId { get; set; }
         public UInt32 PacketNumber { get; set; }
 
