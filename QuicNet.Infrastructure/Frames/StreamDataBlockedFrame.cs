@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace QuicNet.Infrastructure.Frames
 {
-    public class ApplicationCloseFrame : Frame
+    public class StreamDataBlockedFrame : Frame
     {
-        public override byte Type => 0x03;
+        public override byte Type => 0x15;
 
         public override void Decode(ByteArray array)
         {

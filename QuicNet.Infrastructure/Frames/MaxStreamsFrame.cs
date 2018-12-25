@@ -7,17 +7,17 @@ using System.Threading.Tasks;
 
 namespace QuicNet.Infrastructure.Frames
 {
-    public class MaxStreamIdFrame : Frame
+    public class MaxStreamsFrame : Frame
     {
-        public override byte Type => 0x06;
+        public override byte Type => 0x12;
         public StreamId StreamId { get; set; }
 
-        public MaxStreamIdFrame()
+        public MaxStreamsFrame()
         {
 
         }
 
-        public MaxStreamIdFrame(UInt64 maximumStreamId, StreamType appliesTo)
+        public MaxStreamsFrame(UInt64 maximumStreamId, StreamType appliesTo)
         {
             StreamId = new StreamId(maximumStreamId, appliesTo);
         }

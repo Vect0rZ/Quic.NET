@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace QuicNet.Infrastructure.Frames
 {
-    public class RSTStreamFrame : Frame
+    public class ResetStreamFrame : Frame
     {
-        public override byte Type => 0x01;
+        public override byte Type => 0x04;
         public VariableInteger StreamId { get; set; }
         public UInt16 ApplicationErrorCode { get; set; }
         public VariableInteger FinalOffset { get; set; }

@@ -9,7 +9,7 @@ namespace QuicNet.Infrastructure.Frames
 {
     public class ConnectionCloseFrame : Frame
     {
-        public override byte Type => 0x02;
+        public override byte Type => 0x1c;
         public UInt16 ErrorCode { get; set; }
         public VariableInteger ReasonPhraseLength { get; set; }
         public string ReasonPhrase { get; set; }

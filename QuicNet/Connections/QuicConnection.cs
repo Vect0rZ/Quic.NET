@@ -33,7 +33,7 @@ namespace QuicNet.Connections
                     OnRstStreamFrame(frame);
                 if (frame.Type == 0x02)
                     OnConnectionCloseFrame(frame);
-                if (frame.Type >= 0x10 && frame.Type <= 0x17)
+                if (frame.Type >= 0x08 && frame.Type <= 0x0f)
                     OnStreamFrame(frame);
             }
         }
@@ -45,7 +45,7 @@ namespace QuicNet.Connections
 
         private void OnRstStreamFrame(Frame frame)
         {
-            RSTStreamFrame rsf = (RSTStreamFrame)frame;
+            ResetStreamFrame rsf = (ResetStreamFrame)frame;
             if (_streams.ContainsKey(rsf.StreamId))
             {
                 QuicStream stream = _streams[rsf.StreamId];

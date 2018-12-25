@@ -9,7 +9,7 @@ namespace QuicNet.Infrastructure.Frames
 {
     public class PathChallengeFrame : Frame
     {
-        public override byte Type => 0x0e;
+        public override byte Type => 0x1a;
 
         public override void Decode(ByteArray array)
         {
