@@ -73,5 +73,28 @@ namespace QuicNet.Tests.Unit
             Assert.AreEqual(bin[1], (byte)0);
             Assert.AreEqual(num, (UInt64)256);
         }
+
+        [TestMethod]
+        public void TestVariableIntegerMaxValue()
+        {
+            VariableInteger integer = new VariableInteger(VariableInteger.MaxValue);
+            byte[] bin = integer;
+            UInt64 num = integer;
+
+            Assert.IsNotNull(bin);
+            Assert.AreEqual(bin.Length, 8);
+            Assert.AreEqual(num, VariableInteger.MaxValue);
+        }
+
+        [TestMethod]
+        public void TestUInt64MaxValue()
+        {
+            Assert.ThrowsException<ArgumentOutOfRangeException>(() =>
+            {
+                VariableInteger integer = new VariableInteger(UInt64.MaxValue);
+                byte[] bin = integer;
+                UInt64 num = integer;
+            });
+        }
     }
 }

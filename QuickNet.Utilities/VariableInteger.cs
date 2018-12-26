@@ -8,6 +8,8 @@ namespace QuickNet.Utilities
 {
     public class VariableInteger
     {
+        public const UInt64 MaxValue = 4611686018427387903;
+
         private UInt64 _integer;
         public UInt64 Value { get { return _integer; } }
 
@@ -54,6 +56,8 @@ namespace QuickNet.Utilities
                 requiredBytes = 4;
             else if (integer <= UInt64.MaxValue >> 2) /* 4611686018427387903 */
                 requiredBytes = 8;
+            else
+                throw new ArgumentOutOfRangeException("Value is larger than VariableInteger.MaxValue.");
 
             int offset = 8 - requiredBytes;
 
