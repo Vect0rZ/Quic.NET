@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickNet.Tests.Console", "Q
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuicNet.Infrastructure", "QuicNet.Infrastructure\QuicNet.Infrastructure.csproj", "{8159F64B-7511-4DFF-8998-EFB029334A56}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuicNet.Tests.Unit", "QuicNet.Tests.Unit\QuicNet.Tests.Unit.csproj", "{4170C9D8-B2D1-4E59-9F5F-C9665CAD9A37}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -33,6 +35,10 @@ Global
 		{8159F64B-7511-4DFF-8998-EFB029334A56}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8159F64B-7511-4DFF-8998-EFB029334A56}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8159F64B-7511-4DFF-8998-EFB029334A56}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4170C9D8-B2D1-4E59-9F5F-C9665CAD9A37}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4170C9D8-B2D1-4E59-9F5F-C9665CAD9A37}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4170C9D8-B2D1-4E59-9F5F-C9665CAD9A37}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4170C9D8-B2D1-4E59-9F5F-C9665CAD9A37}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
