@@ -3,6 +3,7 @@ using QuicNet;
 using QuicNet.Context;
 using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Frames;
+using QuicNet.Infrastructure.PacketProcessing;
 using QuicNet.Infrastructure.Packets;
 using System;
 using System.Collections.Generic;
@@ -30,7 +31,7 @@ namespace QuickNet.Console
                 TokenLength = 0
             };
 
-            packet = new PacketCreator().CreateInitialPacket(124, 0);
+            packet = new InitialPacketCreator().CreateInitialPacket(124, 0);
 
             ConnectionCloseFrame frame = new ConnectionCloseFrame(ErrorCode.SERVER_BUSY, "The server is too busy to process your request.");
             MaxStreamsFrame msidframe = new MaxStreamsFrame(144123, StreamType.ClientUnidirectional);

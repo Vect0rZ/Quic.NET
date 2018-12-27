@@ -1,4 +1,5 @@
 ﻿using QuickNet.Utilities;
+using QuicNet.Connections;
 using QuicNet.Infrastructure.Packets;
 using QuicNet.Streams;
 using System;
@@ -23,6 +24,8 @@ namespace QuicNet.Context
         public event Action<QuicStreamContext> OnDataReceived;
 
         #region Internal
+
+        internal QuicConnection Connection { get; set; }
 
         /// <summary>
         /// Internal constructor to prevent creating the context outside the scope of Quic.

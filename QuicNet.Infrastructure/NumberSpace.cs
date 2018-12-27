@@ -20,6 +20,11 @@ namespace QuicNet.Infrastructure
             _max = max;
         }
 
+        public bool IsMax()
+        {
+            return _n == _max;
+        }
+
         public UInt32 Get()
         {
             if (_n >= _max)

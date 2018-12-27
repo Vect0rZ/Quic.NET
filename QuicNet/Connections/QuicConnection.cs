@@ -1,7 +1,6 @@
-﻿using QuickNet.Utilities;
-using QuicNet.Context;
+﻿using QuicNet.Context;
 using QuicNet.Infrastructure.Frames;
-using QuicNet.Infrastructure.Packets;
+using QuicNet.Infrastructure.PacketProcessing;
 using QuicNet.Streams;
 using System;
 using System.Collections.Generic;
@@ -10,19 +9,29 @@ namespace QuicNet.Connections
 {
     public class QuicConnection
     {
+        public UInt32 ConnectionId { get; private set; }
+        public UInt32 PeerConnectionId { get; private set; }
+        public QuicContext Context { get; private set; }
+        public PacketCreator PacketCreator { get; private set; }
+
         private ConnectionState _state;
         private Dictionary<UInt64, QuicStream> _streams;
-        public QuicContext Context { get; private set; }
-
-        public QuicConnection(UInt32 id)
+        
+        public QuicConnection(UInt32 id, UInt32 peerConnectionId)
         {
             _state = ConnectionState.Open;
             _streams = new Dictionary<UInt64, QuicStream>();
+
+            ConnectionId = id;
+            PeerConnectionId = peerConnectionId;
+            // Also creates a new number space
+            PacketCreator = new PacketCreator(ConnectionId, PeerConnectionId);
         }
 
         public void AttachContext(QuicContext context)
         {
             Context = context;
+            Context.Connection = this;
         }
 
         public void ProcessFrames(List<Frame> frames)

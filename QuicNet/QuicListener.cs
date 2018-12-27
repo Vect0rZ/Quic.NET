@@ -4,6 +4,7 @@ using QuicNet.Context;
 using QuicNet.Exceptions;
 using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Frames;
+using QuicNet.Infrastructure.PacketProcessing;
 using QuicNet.Infrastructure.Packets;
 using QuicNet.Infrastructure.Settings;
 using System;
@@ -21,7 +22,7 @@ namespace QuicNet
         private UdpClient _client;
 
         private Unpacker _unpacker;
-        private PacketCreator _packetCreator;
+        private InitialPacketCreator _packetCreator;
 
         private int _port;
         private bool _started;
@@ -34,7 +35,7 @@ namespace QuicNet
             _port = port;
             
             _unpacker = new Unpacker();
-            _packetCreator = new PacketCreator();
+            _packetCreator = new InitialPacketCreator();
         }
 
         public void Start()

@@ -65,7 +65,8 @@
     <Compile Include="Frames\StreamFrame.cs" />
     <Compile Include="Frames\StreamDataBlockedFrame.cs" />
     <Compile Include="NumberSpace.cs" />
-    <Compile Include="PacketCreator.cs" />
+    <Compile Include="PacketProcessing\InitialPacketCreator.cs" />
+    <Compile Include="PacketProcessing\PacketCreator.cs" />
     <Compile Include="Packets\InitialPacket.cs" />
     <Compile Include="Packets\LongHeaderPacket.cs" />
     <Compile Include="Packets\Packet.cs" />

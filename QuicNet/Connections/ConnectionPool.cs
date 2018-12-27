@@ -1,4 +1,5 @@
 ﻿using QuicNet.Context;
+using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Settings;
 using System;
 using System.Collections.Generic;
@@ -16,7 +17,7 @@ namespace QuicNet.Connections
         /// Starting point for connection identifiers.
         /// ConnectionId's are incremented sequentially by 1.
         /// </summary>
-        private static UInt32 _connectionIdIterator = 0;
+        private static NumberSpace _ns = new NumberSpace(QuicSettings.MaximumConnectionIds);
 
         private static Dictionary<UInt32, QuicConnection> _pool = new Dictionary<UInt32, QuicConnection>();
 
@@ -37,7 +38,7 @@ namespace QuicNet.Connections
             if (_pool.Count > QuicSettings.MaximumConnectionIds)
                 return false;
 
-            _pool.Add(id, new QuicConnection(id));
+            _pool.Add(id, new QuicConnection(_ns.Get(), id));
 
             return true;
         }

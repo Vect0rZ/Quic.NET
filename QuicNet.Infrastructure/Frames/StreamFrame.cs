@@ -19,6 +19,20 @@ namespace QuicNet.Infrastructure.Frames
         public StreamId ConvertedStreamId { get; set; }
         public bool EndOfStream { get; set; }
 
+        public StreamFrame()
+        {
+
+        }
+
+        public StreamFrame(UInt64 streamId, byte[] data, UInt64 offset, bool eos)
+        {
+            StreamId = streamId;
+            StreamData = data;
+            Length = (UInt64)data.Length;
+            Offset = offset;
+            EndOfStream = eos;
+        }
+
         public override void Decode(ByteArray array)
         {
             byte type = array.ReadByte();

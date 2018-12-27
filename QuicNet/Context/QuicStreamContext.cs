@@ -43,9 +43,7 @@ namespace QuicNet.Context
             if (data == null || data.Length <= 0)
                 return true;
 
-            // TODO: Build the stream packet, currently it's hack-patched to work.
-            Packet packet = new ShortHeaderPacket();
-            packet.AttachFrame(new StreamFrame() { StreamId = Stream.StreamId.Value, Length = (UInt64)data.Length, Offset = 0, EndOfStream = true, StreamData = data });
+            Packet packet = ConnectionContext.Connection.PacketCreator.CreateDataPacket(StreamId, data);
             byte[] sendData = packet.Encode();
 
             bool result = ConnectionContext.Send(sendData);
