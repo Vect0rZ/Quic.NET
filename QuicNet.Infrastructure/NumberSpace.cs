@@ -9,7 +9,7 @@ namespace QuicNet.Infrastructure
     public class NumberSpace
     {
         private UInt32 _max = UInt32.MaxValue;
-        private UInt32 _n = 1;
+        private UInt32 _n = 0;
 
         public NumberSpace()
         {
