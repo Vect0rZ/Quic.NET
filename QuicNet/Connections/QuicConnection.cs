@@ -33,6 +33,8 @@ namespace QuicNet.Connections
                     OnRstStreamFrame(frame);
                 if (frame.Type == 0x02)
                     OnConnectionCloseFrame(frame);
+                if (frame.Type == 0x04)
+                    OnRstStreamFrame(frame);
                 if (frame.Type >= 0x08 && frame.Type <= 0x0f)
                     OnStreamFrame(frame);
             }
@@ -48,8 +50,12 @@ namespace QuicNet.Connections
             ResetStreamFrame rsf = (ResetStreamFrame)frame;
             if (_streams.ContainsKey(rsf.StreamId))
             {
+                // Find and reset the stream
                 QuicStream stream = _streams[rsf.StreamId];
                 stream.ResetStream(rsf);
+
+                // Remove the stream from the connection
+                _streams.Remove(rsf.StreamId);
             }
         }
 

@@ -33,7 +33,10 @@ namespace QuicNet.Streams
 
         public void ResetStream(ResetStreamFrame frame)
         {
+            // Reset the state
             State = StreamState.ResetRecvd;
+            // Clear data
+            _data.Clear();
         }
 
         public bool CanSendData()
