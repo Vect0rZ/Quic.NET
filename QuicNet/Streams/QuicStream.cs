@@ -1,5 +1,6 @@
 ﻿using QuickNet.Utilities;
 using QuicNet.Connections;
+using QuicNet.Context;
 using QuicNet.Infrastructure.Frames;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,8 @@ namespace QuicNet.Streams
     {
         private SortedList<UInt64, byte[]> _data = new SortedList<ulong, byte[]>();
         private QuicConnection _connection;
+        private QuicStreamContext _context;
+
         public StreamState State { get; set; }
         public StreamType Type { get; set; }
         public StreamId StreamId { get; }
@@ -25,11 +28,23 @@ namespace QuicNet.Streams
             Type = streamId.Type;
 
             _connection = connection;
+            _context = null;
         }
 
         public void ResetStream(ResetStreamFrame frame)
         {
             State = StreamState.ResetRecvd;
+        }
+
+        public bool CanSendData()
+        {
+            if (Type == StreamType.ServerUnidirectional)
+                return false;
+
+            if (State == StreamState.Recv || State == StreamState.SizeKnown)
+                return true;
+
+            return false;
         }
 
         public void ProcessData(StreamFrame frame)
@@ -55,7 +70,15 @@ namespace QuicNet.Streams
                 State = StreamState.SizeKnown;
 
             if (State == StreamState.SizeKnown && IsStreamFull())
-                _connection.Context.DataReceived(_data.SelectMany(v => v.Value).ToArray(), StreamId);
+            {
+                byte[] aggregatedData = _data.SelectMany(v => v.Value).ToArray();
+                BuildContext(aggregatedData);
+
+                _connection.Context.DataReceived(_context);
+
+                State = StreamState.DataRecvd;
+            }
+                
         }
 
         private bool IsStreamFull()
@@ -71,6 +94,11 @@ namespace QuicNet.Streams
             }
 
             return true;
+        }
+
+        private void BuildContext(byte[] data)
+        {
+            _context = new QuicStreamContext(this, _connection.Context, data);
         }
     }
 }

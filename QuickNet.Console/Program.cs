@@ -71,13 +71,16 @@ namespace QuickNet.Console
             obj.OnDataReceived += Obj_OnDataReceived;
         }
 
-        private static void Obj_OnDataReceived(QuicContext obj)
+        private static void Obj_OnDataReceived(QuicStreamContext obj)
         {
             System.Console.WriteLine("Data received");
             foreach (byte b in obj.Data)
             {
                 System.Console.Write(string.Format("{0},", b));
             }
+
+            // Echo back to the client
+            obj.Send(Encoding.UTF8.GetBytes("Echo!"));
         }
 
         static string ToBase64(byte[] data)
