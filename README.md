@@ -58,10 +58,14 @@ namespace QuickNet.Console
             System.Console.WriteLine("Client connected.");
             context.OnDataReceived += OnDataReceived;        // Attach a callback when the server reveices data
         }
-        static void OnDataReceived(QuicContext context)
+        static void OnDataReceived(QuicStreamContext context)
         {
             string result = Convert.ToBase64String(context.Data);   // Data
             System.Console.WriteLine("Received data: {0}", result);
+            
+            // Send data back to the client
+            byte[] echoData = Encoding.UTF8.GetBytes("Echo!");
+            context.Send(echoData);
         }
     }
 }
