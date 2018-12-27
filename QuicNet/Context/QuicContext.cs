@@ -24,24 +24,6 @@ namespace QuicNet.Context
         public byte[] Data { get; set; }
 
         /// <summary>
-        /// Internal constructor to prevent createing the context outside the scope of Quic.
-        /// </summary>
-        /// <param name="client"></param>
-        /// <param name="endpoint"></param>
-        internal QuicContext(UdpClient client, IPEndPoint endpoint)
-        {
-            _client = client;
-            Endpoint = endpoint;
-            Data = new byte[0];
-        }
-
-        internal void DataReceived(byte[] data, StreamId id)
-        {
-            this.Data = data;
-            OnDataReceived?.Invoke(this);
-        }
-
-        /// <summary>
         /// Send data to the client.
         /// </summary>
         /// <param name="data"></param>
@@ -57,6 +39,26 @@ namespace QuicNet.Context
                 return false;
 
             return true;
+        }
+
+        #region Internal
+
+        /// <summary>
+        /// Internal constructor to prevent creating the context outside the scope of Quic.
+        /// </summary>
+        /// <param name="client"></param>
+        /// <param name="endpoint"></param>
+        internal QuicContext(UdpClient client, IPEndPoint endpoint)
+        {
+            _client = client;
+            Endpoint = endpoint;
+            Data = new byte[0];
+        }
+
+        internal void DataReceived(byte[] data, StreamId id)
+        {
+            this.Data = data;
+            OnDataReceived?.Invoke(this);
         }
 
         /// <summary>
@@ -78,5 +80,7 @@ namespace QuicNet.Context
 
             return true;
         }
+
+        #endregion
     }
 }
