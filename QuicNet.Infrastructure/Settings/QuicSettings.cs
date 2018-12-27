@@ -41,5 +41,11 @@ namespace QuicNet.Infrastructure.Settings
         /// Limit the maximum number of frames a packet can carry.
         /// </summary>
         public const int MaximumFramesPerPacket = 10;
+
+        /// <summary>
+        /// Maximum data that can be transferred for a Connection/Stream.
+        /// Currently 10Mb.
+        /// </summary>
+        public const int MaxData = 10 * 1000 * 1000;
     }
 }

@@ -44,28 +44,28 @@ namespace QuicNet.Context
         }
 
         /// <summary>
-        /// Used to send stream data back to it's peer.
-        /// This method assumes that the data is an actual encoded packet.
-        /// </summary>
-        /// <param name="data"></param>
-        /// <returns></returns>
-        internal bool Send(byte[] data)
-        {
-            int result = _client.Send(data, data.Length, Endpoint);
-            if (result <= 0)
-                return false;
-
-            return true;
-        }
-
-        /// <summary>
         /// Used to send protocol packets to the peer.
         /// </summary>
         /// <param name="packet"></param>
         /// <returns></returns>
         internal bool Send(Packet packet)
         {
+            // Encode the packet
             byte[] data = packet.Encode();
+
+            // Increment the connection transfer rate
+            Connection.IncrementRate(data.Length);
+
+            // If the maximum transfer rate is reached, send FLOW_CONTROL_ERROR
+            if (Connection.MaximumReached())
+            {
+                packet = Connection.PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, "Maximum data transfer reached.");
+                data = packet.Encode();
+
+                Connection.TerminateConnection();
+
+                return false;
+            }
 
             // Ignore empty packets
             if (data == null || data.Length <= 0)

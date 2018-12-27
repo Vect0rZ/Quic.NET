@@ -1,6 +1,7 @@
 ﻿using QuicNet.Context;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.PacketProcessing;
+using QuicNet.Infrastructure.Settings;
 using QuicNet.Streams;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,15 @@ namespace QuicNet.Connections
         public UInt32 PeerConnectionId { get; private set; }
         public QuicContext Context { get; private set; }
         public PacketCreator PacketCreator { get; private set; }
+        public UInt64 MaxData { get; private set; }
 
+        private UInt64 _currentTransferRate;
         private ConnectionState _state;
         private Dictionary<UInt64, QuicStream> _streams;
         
         public QuicConnection(UInt32 id, UInt32 peerConnectionId)
         {
+            _currentTransferRate = 0;
             _state = ConnectionState.Open;
             _streams = new Dictionary<UInt64, QuicStream>();
 
@@ -26,6 +30,7 @@ namespace QuicNet.Connections
             PeerConnectionId = peerConnectionId;
             // Also creates a new number space
             PacketCreator = new PacketCreator(ConnectionId, PeerConnectionId);
+            MaxData = QuicSettings.MaxData;
         }
 
         public void AttachContext(QuicContext context)
@@ -46,7 +51,22 @@ namespace QuicNet.Connections
                     OnRstStreamFrame(frame);
                 if (frame.Type >= 0x08 && frame.Type <= 0x0f)
                     OnStreamFrame(frame);
+                if (frame.Type == 0x10)
+                    OnMaxDataFrame(frame);
             }
+        }
+
+        public void IncrementRate(int length)
+        {
+            _currentTransferRate += (UInt32)length;
+        }
+
+        public bool MaximumReached()
+        {
+            if (_currentTransferRate >= MaxData)
+                return true;
+
+            return false;
         }
 
         private void OnConnectionCloseFrame(Frame frame)
@@ -83,6 +103,18 @@ namespace QuicNet.Connections
                 QuicStream stream = _streams[sf.StreamId];
                 stream.ProcessData(sf);
             }
+        }
+
+        private void OnMaxDataFrame(Frame frame)
+        {
+            MaxDataFrame sf = (MaxDataFrame)frame;
+            if (sf.MaximumData.Value > MaxData)
+                MaxData = sf.MaximumData.Value;
+        }
+
+        internal void TerminateConnection()
+        {
+            _state = ConnectionState.Draining;
         }
     }
 }

@@ -44,9 +44,8 @@ namespace QuicNet.Context
                 return true;
 
             Packet packet = ConnectionContext.Connection.PacketCreator.CreateDataPacket(StreamId, data);
-            byte[] sendData = packet.Encode();
 
-            bool result = ConnectionContext.Send(sendData);
+            bool result = ConnectionContext.Send(packet);
 
             return result;
         }
