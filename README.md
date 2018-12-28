@@ -72,7 +72,7 @@ namespace QuickNet.Tests.ConsoleServer
 ```
 
 ## Client
-```
+```csharp
 using QuickNet;
 
 namespace QuicNet.Tests.ConsoleClient
