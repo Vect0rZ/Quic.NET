@@ -23,7 +23,8 @@ namespace QuicNet
 
         public QuicClient()
         {
-
+            _client = new UdpClient();
+            _packetCreator = new InitialPacketCreator();
         }
 
         public bool Connect(string ip, int port)

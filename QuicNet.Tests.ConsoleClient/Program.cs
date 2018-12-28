@@ -11,6 +11,7 @@ namespace QuicNet.Tests.ConsoleClient
         static void Main(string[] args)
         {
             QuicClient client = new QuicClient();
+            client.Connect("127.0.0.1", 11000);
         }
     }
 }
