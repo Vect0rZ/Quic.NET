@@ -45,6 +45,7 @@
     <Compile Include="Connections\QuicConnection.cs" />
     <Compile Include="Context\QuicContext.cs" />
     <Compile Include="Context\QuicStreamContext.cs" />
+    <Compile Include="Exceptions\QuicConnectivityException.cs" />
     <Compile Include="Exceptions\QuicListenerNotStartedException.cs" />
     <Compile Include="QuicClient.cs" />
     <Compile Include="QuicListener.cs" />
