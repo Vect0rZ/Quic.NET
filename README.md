@@ -43,7 +43,7 @@ using System;
 using QuicNet;
 using QuicNet.Context;
 
-namespace QuickNet.Console
+namespace QuickNet.Tests.ConsoleServer
 {
     class Program
     {
@@ -73,7 +73,19 @@ namespace QuickNet.Console
 
 ## Client
 ```
-WIP
+using QuickNet;
+
+namespace QuicNet.Tests.ConsoleClient
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            QuicClient client = new QuicClient();
+            client.Connect("127.0.0.1", 1234);
+        }
+    }
+}
 ```
 
 # What is QUIC?
