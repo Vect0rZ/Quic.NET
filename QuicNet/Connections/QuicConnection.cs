@@ -1,6 +1,7 @@
 ﻿using QuicNet.Context;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.PacketProcessing;
+using QuicNet.Infrastructure.Packets;
 using QuicNet.Infrastructure.Settings;
 using QuicNet.Streams;
 using System;
@@ -15,6 +16,7 @@ namespace QuicNet.Connections
         public QuicContext Context { get; private set; }
         public PacketCreator PacketCreator { get; private set; }
         public UInt64 MaxData { get; private set; }
+        public UInt64 MaxStreams { get; private set; }
 
         private UInt64 _currentTransferRate;
         private ConnectionState _state;
@@ -31,6 +33,7 @@ namespace QuicNet.Connections
             // Also creates a new number space
             PacketCreator = new PacketCreator(ConnectionId, PeerConnectionId);
             MaxData = QuicSettings.MaxData;
+            MaxStreams = QuicSettings.MaximumStreamId;
         }
 
         public void AttachContext(QuicContext context)
@@ -53,6 +56,8 @@ namespace QuicNet.Connections
                     OnStreamFrame(frame);
                 if (frame.Type == 0x10)
                     OnMaxDataFrame(frame);
+                if (frame.Type >= 0x12 && frame.Type <= 0x13)
+                    OnMaxStreamFrame(frame);
             }
         }
 
@@ -96,7 +101,10 @@ namespace QuicNet.Connections
                 QuicStream stream = new QuicStream(this, sf.ConvertedStreamId);
                 stream.ProcessData(sf);
 
-                _streams.Add(sf.StreamId.Value, stream);
+                if ((UInt64)_streams.Count < MaxStreams)
+                    _streams.Add(sf.StreamId.Value, stream);
+                else
+                    SendMaximumStreamReachedError();
             }
             else
             {
@@ -112,9 +120,22 @@ namespace QuicNet.Connections
                 MaxData = sf.MaximumData.Value;
         }
 
+        private void OnMaxStreamFrame(Frame frame)
+        {
+            MaxStreamsFrame msf = (MaxStreamsFrame)frame;
+            if (msf.MaximumStreams > MaxStreams)
+                MaxStreams = msf.MaximumStreams.Value;
+        }
+
         internal void TerminateConnection()
         {
             _state = ConnectionState.Draining;
+        }
+
+        internal void SendMaximumStreamReachedError()
+        {
+            ShortHeaderPacket packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.STREAM_ID_ERROR, "Maximum number of streams reached.");
+            Context.Send(packet);
         }
     }
 }

@@ -10,7 +10,7 @@ namespace QuicNet.Infrastructure.Frames
     public class MaxStreamsFrame : Frame
     {
         public override byte Type => 0x12;
-        public StreamId StreamId { get; set; }
+        public VariableInteger MaximumStreams { get; set; }
 
         public MaxStreamsFrame()
         {
@@ -19,13 +19,13 @@ namespace QuicNet.Infrastructure.Frames
 
         public MaxStreamsFrame(UInt64 maximumStreamId, StreamType appliesTo)
         {
-            StreamId = new StreamId(maximumStreamId, appliesTo);
+            MaximumStreams = new VariableInteger(maximumStreamId);
         }
 
         public override void Decode(ByteArray array)
         {
             byte type = array.ReadByte();
-            StreamId = array.ReadStreamId();
+            MaximumStreams = array.ReadVariableInteger();
         }
 
         public override byte[] Encode()
@@ -33,7 +33,7 @@ namespace QuicNet.Infrastructure.Frames
             List<byte> result = new List<byte>();
             result.Add(Type);
 
-            byte[] streamId = StreamId;
+            byte[] streamId = MaximumStreams;
             result.AddRange(streamId);
 
             return result.ToArray();
