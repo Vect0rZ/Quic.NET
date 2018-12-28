@@ -7,8 +7,8 @@
     <ProjectGuid>{D348C0C7-7F21-4E6D-855B-397BCC35F4B6}</ProjectGuid>
     <OutputType>Exe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>QuickNet.Console</RootNamespace>
-    <AssemblyName>QuickNet.Console</AssemblyName>
+    <RootNamespace>QuickNet.Tests.ConsoleServer</RootNamespace>
+    <AssemblyName>QuickNet.Tests.ConsoleServer</AssemblyName>
     <TargetFrameworkVersion>v4.5.2</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>

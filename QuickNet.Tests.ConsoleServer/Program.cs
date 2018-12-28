@@ -11,7 +11,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace QuickNet.Console
+namespace QuickNet.Tests.ConsoleServer
 {
     class Program
     {
