@@ -134,7 +134,7 @@ namespace QuicNet.Connections
 
         internal void SendMaximumStreamReachedError()
         {
-            ShortHeaderPacket packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.STREAM_ID_ERROR, "Maximum number of streams reached.");
+            ShortHeaderPacket packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.STREAM_LIMIT_ERROR, "Maximum number of streams reached.");
             Context.Send(packet);
         }
     }

@@ -12,7 +12,7 @@ namespace QuicNet.Infrastructure
         INTERNAL_ERROR = 0x1,
         SERVER_BUSY = 0x2,
         FLOW_CONTROL_ERROR = 0x3,
-        STREAM_ID_ERROR = 0x4,
+        STREAM_LIMIT_ERROR = 0x4,
         STREAM_STATE_ERROR = 0x5,
         FINAL_OFFSET_ERROR = 0x6,
         FRAME_ENCODING_ERROR = 0x7,
