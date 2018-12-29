@@ -59,7 +59,7 @@ namespace QuicNet
             InitialPacket ini = (InitialPacket)packet;
 
             HandleInitialFrames(packet);
-            EstablishConnection(ini.DestinationConnectionId, ini.SourceConnectionId);
+            EstablishConnection(ini.SourceConnectionId, ini.SourceConnectionId);
 
             // Create the QuicContext
             QuicContext context = new QuicContext(_client, _peerIp);

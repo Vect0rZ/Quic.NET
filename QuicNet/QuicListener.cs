@@ -85,6 +85,7 @@ namespace QuicNet
 
         private void ProcessInitialPacket(Packet packet, IPEndPoint endPoint)
         {
+            UInt32 availableConnectionId;
             byte[] data;
             // Unsupported version. Version negotiation packet is sent only on initial connection. All other packets are dropped. (5.2.2 / 16th draft)
             if (packet.Version != QuicVersion.CurrentVersion || !QuicVersion.SupportedVersions.Contains(packet.Version))
@@ -104,8 +105,11 @@ namespace QuicNet
             {
                 ip.AttachFrame(new ConnectionCloseFrame(ErrorCode.PROTOCOL_VIOLATION, "PMTU have not been reached."));
             }
-            else if (ConnectionPool.AddConnection(cast.SourceConnectionId) == true)
+            else if (ConnectionPool.AddConnection(cast.SourceConnectionId, out availableConnectionId) == true)
             {
+                // Tell the peer the available connection id
+                ip.SourceConnectionId = (byte)availableConnectionId;
+
                 // We're including the maximum possible stream id during the connection handshake. (4.5 / 16th draft)
                 ip.AttachFrame(new MaxStreamsFrame(QuicSettings.MaximumStreamId, StreamType.ServerBidirectional));
             }

@@ -30,15 +30,19 @@ namespace QuicNet.Connections
         /// </summary>
         /// <param name="id">Connection Id</param>
         /// <returns></returns>
-        public static bool AddConnection(UInt32 id)
+        public static bool AddConnection(UInt32 id, out UInt32 availableConnectionId)
         {
+            availableConnectionId = 0;
+
             if (_pool.ContainsKey(id))
                 return false;
 
             if (_pool.Count > QuicSettings.MaximumConnectionIds)
                 return false;
 
-            _pool.Add(id, new QuicConnection(_ns.Get(), id));
+            availableConnectionId = _ns.Get();
+
+            _pool.Add(id, new QuicConnection(availableConnectionId, availableConnectionId));
 
             return true;
         }
