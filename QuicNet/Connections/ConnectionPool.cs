@@ -42,7 +42,7 @@ namespace QuicNet.Connections
 
             availableConnectionId = _ns.Get();
 
-            _pool.Add(id, new QuicConnection(availableConnectionId, availableConnectionId));
+            _pool.Add(availableConnectionId, new QuicConnection(availableConnectionId, availableConnectionId));
 
             return true;
         }

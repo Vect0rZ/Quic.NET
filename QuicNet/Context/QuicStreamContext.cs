@@ -50,6 +50,12 @@ namespace QuicNet.Context
             return result;
         }
 
+        public void Close()
+        {
+            // TODO: Close out the stream by sending appropriate packets to the peer
+        }
+
+
         #region Internal
 
         internal QuicStream Stream { get; set; }
@@ -59,11 +65,15 @@ namespace QuicNet.Context
         /// </summary>
         /// <param name="data"></param>
         /// <param name="streamId"></param>
-        internal QuicStreamContext(QuicStream stream, QuicContext context, byte[] data)
+        internal QuicStreamContext(QuicStream stream, QuicContext context)
         {
             Stream = stream;
             StreamId = stream.StreamId;
             ConnectionContext = context;
+        }
+
+        internal void SetData(byte[] data)
+        {
             Data = data;
         }
 

@@ -127,7 +127,7 @@ namespace QuicNet
             {
                 // Create a QuicContext to represent the connected client.
                 QuicContext context = new QuicContext(_client, endPoint);
-                ConnectionPool.AttachContext(cast.SourceConnectionId, context);
+                ConnectionPool.AttachContext(ip.SourceConnectionId, context);
 
                 OnClientConnected?.Invoke(context);
             }

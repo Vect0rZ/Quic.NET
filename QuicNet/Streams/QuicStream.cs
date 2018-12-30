@@ -16,7 +16,8 @@ namespace QuicNet.Streams
     {
         private SortedList<UInt64, byte[]> _data = new SortedList<ulong, byte[]>();
         private QuicConnection _connection;
-        private QuicStreamContext _context;
+
+        public QuicStreamContext Context;
 
         public StreamState State { get; set; }
         public StreamType Type { get; set; }
@@ -28,7 +29,7 @@ namespace QuicNet.Streams
             Type = streamId.Type;
 
             _connection = connection;
-            _context = null;
+            Context = new QuicStreamContext(this, _connection.Context);
         }
 
         public void ResetStream(ResetStreamFrame frame)
@@ -75,9 +76,9 @@ namespace QuicNet.Streams
             if (State == StreamState.SizeKnown && IsStreamFull())
             {
                 byte[] aggregatedData = _data.SelectMany(v => v.Value).ToArray();
-                BuildContext(aggregatedData);
+                Context.SetData(data);
 
-                _connection.Context.DataReceived(_context);
+                _connection.Context.DataReceived(Context);
 
                 State = StreamState.DataRecvd;
             }
@@ -97,11 +98,6 @@ namespace QuicNet.Streams
             }
 
             return true;
-        }
-
-        private void BuildContext(byte[] data)
-        {
-            _context = new QuicStreamContext(this, _connection.Context, data);
         }
     }
 }

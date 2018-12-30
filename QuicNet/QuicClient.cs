@@ -1,10 +1,12 @@
-﻿using QuicNet.Connections;
+﻿using QuickNet.Utilities;
+using QuicNet.Connections;
 using QuicNet.Context;
 using QuicNet.Exceptions;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.PacketProcessing;
 using QuicNet.Infrastructure.Packets;
 using QuicNet.Infrastructure.Settings;
+using QuicNet.Streams;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -21,6 +23,7 @@ namespace QuicNet
         private UdpClient _client;
 
         private QuicConnection _connection;
+        private QuicStream _stream;
 
         private Unpacker _unpacker;
         private InitialPacketCreator _packetCreator;
@@ -38,14 +41,13 @@ namespace QuicNet
         {
             // Establish socket connection
             _peerIp = new IPEndPoint(IPAddress.Parse(ip), port);
-            _client.Connect(_peerIp);
 
             // Start initial protocol process
             InitialPacket connectionPacket = _packetCreator.CreateInitialPacket(0, 0);
             byte[] data = connectionPacket.Encode();
 
             // Send the initial packet
-            _client.Send(data, data.Length);
+            _client.Send(data, data.Length, _peerIp);
 
             // Await response for sucessfull connection creation by the server
             byte[] peerData = _client.Receive(ref _peerIp);
@@ -63,9 +65,18 @@ namespace QuicNet
 
             // Create the QuicContext
             QuicContext context = new QuicContext(_client, _peerIp);
-            context.Connection = this._connection;
+
+            // Cross reference with Connection
+            _connection.AttachContext(context);
 
             return context;
+        }
+
+        public QuicStreamContext CreateStream()
+        {
+            QuicStream stream = new QuicStream(_connection, new StreamId(1, StreamType.ClientBidirectional));
+            
+            return stream.Context;
         }
 
         private void HandleInitialFrames(Packet packet)
