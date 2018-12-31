@@ -2,6 +2,9 @@
     <img src="https://i.imgur.com/r3nH7de.png"></img>
 </p>
 <p align="center">
+    0x5C2AAD80
+</p>
+<p align="center">
     <a href="https://travis-ci.org/Vect0rZ/Quic.NET">
         <img src="https://travis-ci.org/Vect0rZ/Quic.NET.svg?branch=master" alt="Build Status">
     </a>
