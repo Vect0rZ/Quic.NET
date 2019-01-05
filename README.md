@@ -118,11 +118,11 @@ Frames are the smallest unit that contain either data that needs to be trasferre
 
 Following the Fork and Pull GitHub workflow:
 
- 1. **Fork** the repo on GitHub
- 2. **Clone** the project locally
- 3. **Commit** changes
- 4. **Push** your work back up to your fork
- 5. Submit a **Pull request** so that the changes go through a review
+  1. **Fork** the repo on GitHub;
+  2. **Clone** the project locally;
+  3. **Commit** changes;
+  4. **Push** your work back up to your fork;
+  5. Submit a **Pull request** so that the changes go through a review.
 
 # More
 
