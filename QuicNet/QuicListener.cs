@@ -27,8 +27,6 @@ namespace QuicNet
         private int _port;
         private bool _started;
 
-        public event Action<QuicContext> OnClientConnected;
-
         public QuicListener(int port)
         {
             _started = false;
@@ -42,7 +40,6 @@ namespace QuicNet
         {
             _client = new UdpClient(_port);
             _started = true;
-            Receive();
         }
 
         public void Close()
@@ -50,11 +47,33 @@ namespace QuicNet
             _client.Close();
         }
 
-        private void Receive()
+        public QuicConnection AcceptQuicClient()
         {
             if (!_started)
                 throw new QuicListenerNotStartedException("Please call the Start() method before receving data.");
-            
+
+            /*
+             * Wait until there is initial packet incomming.
+             * Otherwise we still need to orchestrate any other protocol or data pakcets.
+             * */
+            while (true)
+            {
+                IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, _port);
+                byte[] data = _client.Receive(ref endpoint);
+
+                Packet packet = _unpacker.Unpack(data);
+                if (packet is InitialPacket)
+                {
+                    QuicConnection connection = ProcessInitialPacket(packet, endpoint);
+                    return connection;
+                }
+
+                OrchestratePacket(packet);
+            }
+        }
+
+        private void Receive()
+        {
             while (true)
             {
                 IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, _port);
@@ -67,24 +86,21 @@ namespace QuicNet
                     continue;
 
                 // TODO: Validate packet before dispatching
-                ProcessPacket(packet, endpoint);
+                OrchestratePacket(packet);
             }
         }
 
-        private void ProcessPacket(Packet packet, IPEndPoint endPoint)
+        private void OrchestratePacket(Packet packet)
         {
-            if (packet is InitialPacket)
-            {
-                ProcessInitialPacket(packet, endPoint);
-            }
-            else if (packet is ShortHeaderPacket)
+            if (packet is ShortHeaderPacket)
             {
                 ProcessShortHeaderPacket(packet);
             }
         }
 
-        private void ProcessInitialPacket(Packet packet, IPEndPoint endPoint)
+        private QuicConnection ProcessInitialPacket(Packet packet, IPEndPoint endPoint)
         {
+            QuicConnection result = null;
             UInt32 availableConnectionId;
             byte[] data;
             // Unsupported version. Version negotiation packet is sent only on initial connection. All other packets are dropped. (5.2.2 / 16th draft)
@@ -94,7 +110,7 @@ namespace QuicNet
                 data = vnp.Encode();
 
                 _client.Send(data, data.Length, endPoint);
-                return;
+                return null;
             }
 
             InitialPacket cast = packet as InitialPacket;
@@ -112,6 +128,9 @@ namespace QuicNet
 
                 // We're including the maximum possible stream id during the connection handshake. (4.5 / 16th draft)
                 ip.AttachFrame(new MaxStreamsFrame(QuicSettings.MaximumStreamId, StreamType.ServerBidirectional));
+
+                // Set the return result
+                result = ConnectionPool.Find(availableConnectionId);
             }
             else
             {
@@ -124,13 +143,9 @@ namespace QuicNet
             data = ip.Encode();
             int dataSent = _client.Send(data, data.Length, endPoint);
             if (dataSent > 0)
-            {
-                // Create a QuicContext to represent the connected client.
-                QuicContext context = new QuicContext(_client, endPoint);
-                ConnectionPool.AttachContext(ip.SourceConnectionId, context);
+                return result;
 
-                OnClientConnected?.Invoke(context);
-            }
+            return null;
         }
 
         private void ProcessShortHeaderPacket(Packet packet)

@@ -1,5 +1,6 @@
 ﻿using QuickNet.Utilities;
 using QuicNet;
+using QuicNet.Connections;
 using QuicNet.Context;
 using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Frames;
@@ -15,6 +16,15 @@ namespace QuickNet.Tests.ConsoleServer
 {
     class Program
     {
+        static void Example()
+        {
+            QuicListener listener = new QuicListener(11000);
+            while (true)
+            {
+                QuicConnection client = listener.AcceptQuicClient();
+            }
+        }
+
         static void Main(string[] args)
         {
             byte[] bytes = new VariableInteger(12345);
@@ -62,7 +72,7 @@ namespace QuickNet.Tests.ConsoleServer
             StreamId streamId = streamIdData;
 
             QuicListener listener = new QuicListener(11000);
-            listener.OnClientConnected += Listener_OnClientConnected;
+            // listener.OnClientConnected += Listener_OnClientConnected;
             listener.Start();
         }
 

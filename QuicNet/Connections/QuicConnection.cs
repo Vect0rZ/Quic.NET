@@ -6,6 +6,8 @@ using QuicNet.Infrastructure.Settings;
 using QuicNet.Streams;
 using System;
 using System.Collections.Generic;
+using System.Net;
+using System.Net.Sockets;
 
 namespace QuicNet.Connections
 {
