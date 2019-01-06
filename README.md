@@ -52,23 +52,21 @@ namespace QuickNet.Tests.ConsoleServer
     {
         static void Main(string[] args)
         {
-            QuicListener listener = new QuicListener(1234);  // Start a new listener on port 1234
-            listener.OnClientConnected += OnClientConnected; // Attach callback when a new client is connected
-            listener.Start();                                // Start listening
-        }
-        static void OnClientConnected(QuicContext context)
-        {
-            System.Console.WriteLine("Client connected.");
-            context.OnDataReceived += OnDataReceived;        // Attach a callback when the server reveices data
-        }
-        static void OnDataReceived(QuicStreamContext context)
-        {
-            string result = Convert.ToBase64String(context.Data);   // Data
-            System.Console.WriteLine("Received data: {0}", result);
-            
-            // Send data back to the client
-            byte[] echoData = Encoding.UTF8.GetBytes("Echo!");
-            context.Send(echoData);
+            QuicListener listener = new QuicListener(11000);
+            listener.Start();
+            while (true)
+            {
+                // Blocks while waiting for a connection
+                QuicConnection client = listener.AcceptQuicClient();
+
+                // Assign an action when a data is received from that client.
+                client.OnDataReceived += (c) => {
+                    byte[] data = c.Data;
+                    Console.WriteLine("Data received: " + Encoding.UTF8.GetString(data));
+                    // Echo back data to the client
+                    c.Send(Encoding.UTF8.GetBytes("Echo!"));
+                };
+            }
         }
     }
 }
@@ -85,11 +83,13 @@ namespace QuicNet.Tests.ConsoleClient
         static void Main(string[] args)
         {
             QuicClient client = new QuicClient();
-            QuicContext context = client.Connect("127.0.0.1", 1234);   // Connect to peer (Server)
-            QuicStreamContext sc = client.CreateStream();               // Create a data stream
-            sc.Send(Encoding.UTF8.GetBytes("Hello from Client!"));      // Send Data
-
-            sc.Close();                                                 // Close the stream after processing
+            QuicConnection connection = client.Connect("127.0.0.1", 11000);   // Connect to peer (Server)
+            
+            QuicStream stream = connection.CreateStream();                    // Create a data stream
+            stream.Send(Encoding.UTF8.GetBytes("Hello from Client!"));        // Send Data
+            
+            byte[] data = stream.Receive();                                   // Receive from server (Blocks)
+            Console.ReadKey();
         }
     }
 }
