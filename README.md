@@ -85,10 +85,14 @@ namespace QuicNet.Tests.ConsoleClient
             QuicClient client = new QuicClient();
             QuicConnection connection = client.Connect("127.0.0.1", 11000);   // Connect to peer (Server)
             
-            QuicStream stream = connection.CreateStream();                    // Create a data stream
-            stream.Send(Encoding.UTF8.GetBytes("Hello from Client!"));        // Send Data
+            // Create a Bidirectional data stream
+            QuicStream stream = connection.CreateStream(QuickNet.Utilities.StreamType.ClientBidirectional);
             
-            byte[] data = stream.Receive();                                   // Receive from server (Blocks)
+            // Send Data
+            stream.Send(Encoding.UTF8.GetBytes("Hello from Client!"));        
+            
+            // Receive from server (Blocks)
+            byte[] data = stream.Receive();                                   
             Console.ReadKey();
         }
     }
