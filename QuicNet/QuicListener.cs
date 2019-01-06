@@ -18,6 +18,9 @@ using System.Threading.Tasks;
 
 namespace QuicNet
 {
+    /// <summary>
+    /// Quic Listener - a Quic server that processes incomming connections and if possible sends back data on it's peers.
+    /// </summary>
     public class QuicListener
     {
         private UdpClient _client;
@@ -30,6 +33,10 @@ namespace QuicNet
         private int _port;
         private bool _started;
 
+        /// <summary>
+        /// Create a new instance of QuicListener.
+        /// </summary>
+        /// <param name="port">The port that the server will listen on.</param>
         public QuicListener(int port)
         {
             _started = false;
@@ -39,6 +46,9 @@ namespace QuicNet
             _packetCreator = new InitialPacketCreator();
         }
 
+        /// <summary>
+        /// Starts the listener.
+        /// </summary>
         public void Start()
         {
             _client = new UdpClient(_port);
@@ -46,11 +56,18 @@ namespace QuicNet
             _pwt = new PacketWireTransfer(_client, null);
         }
 
+        /// <summary>
+        /// Stops the listener.
+        /// </summary>
         public void Close()
         {
             _client.Close();
         }
 
+        /// <summary>
+        /// Blocks and waits for incomming connection. Does NOT block additional incomming packets.
+        /// </summary>
+        /// <returns>Returns an instance of QuicConnection.</returns>
         public QuicConnection AcceptQuicClient()
         {
             if (!_started)
@@ -73,6 +90,9 @@ namespace QuicNet
             }
         }
 
+        /// <summary>
+        /// Starts receiving data from clients.
+        /// </summary>
         private void Receive()
         {
             while (true)
@@ -88,6 +108,10 @@ namespace QuicNet
             }
         }
 
+        /// <summary>
+        /// Orchestrates packets to connections, depending on the packet type.
+        /// </summary>
+        /// <param name="packet"></param>
         private void OrchestratePacket(Packet packet)
         {
             if (packet is ShortHeaderPacket)
@@ -96,6 +120,12 @@ namespace QuicNet
             }
         }
 
+        /// <summary>
+        /// Processes incomming initial packet and creates or halts a connection.
+        /// </summary>
+        /// <param name="packet">Initial Packet</param>
+        /// <param name="endPoint">Peer's endpoint</param>
+        /// <returns></returns>
         private QuicConnection ProcessInitialPacket(Packet packet, IPEndPoint endPoint)
         {
             QuicConnection result = null;
@@ -146,6 +176,10 @@ namespace QuicNet
             return null;
         }
 
+        /// <summary>
+        /// Processes short header packet, by distributing the frames towards connections.
+        /// </summary>
+        /// <param name="packet"></param>
         private void ProcessShortHeaderPacket(Packet packet)
         {
             ShortHeaderPacket shp = (ShortHeaderPacket)packet;

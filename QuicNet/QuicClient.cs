@@ -18,6 +18,9 @@ using System.Threading.Tasks;
 
 namespace QuicNet
 {
+    /// <summary>
+    /// Quic Client. Used for sending and receiving data from a Quic Server.
+    /// </summary>
     public class QuicClient
     {
         private IPEndPoint _peerIp;
@@ -39,6 +42,12 @@ namespace QuicNet
             _packetCreator = new InitialPacketCreator();
         }
 
+        /// <summary>
+        /// Connect to a remote server.
+        /// </summary>
+        /// <param name="ip">Ip Address</param>
+        /// <param name="port">Port</param>
+        /// <returns></returns>
         public QuicConnection Connect(string ip, int port)
         {
             // Establish socket connection
@@ -62,6 +71,10 @@ namespace QuicNet
             return _connection;
         }
 
+        /// <summary>
+        /// Handles initial packet's frames. (In most cases protocol frames)
+        /// </summary>
+        /// <param name="packet"></param>
         private void HandleInitialFrames(Packet packet)
         {
             List<Frame> frames = packet.GetFrames();
@@ -87,6 +100,11 @@ namespace QuicNet
             }
         }
 
+        /// <summary>
+        /// Create a new connection
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="peerConnectionId"></param>
         private void EstablishConnection(UInt32 connectionId, UInt32 peerConnectionId)
         {
             ConnectionData connection = new ConnectionData(_pwt, connectionId, peerConnectionId);
