@@ -7,6 +7,7 @@ using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.PacketProcessing;
 using QuicNet.Infrastructure.Packets;
 using QuicNet.Infrastructure.Settings;
+using QuicNet.InternalInfrastructure;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -24,6 +25,8 @@ namespace QuicNet
         private Unpacker _unpacker;
         private InitialPacketCreator _packetCreator;
 
+        private PacketWireTransfer _pwt;
+
         private int _port;
         private bool _started;
 
@@ -40,6 +43,7 @@ namespace QuicNet
         {
             _client = new UdpClient(_port);
             _started = true;
+            _pwt = new PacketWireTransfer(_client, null);
         }
 
         public void Close()
@@ -58,13 +62,10 @@ namespace QuicNet
              * */
             while (true)
             {
-                IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, _port);
-                byte[] data = _client.Receive(ref endpoint);
-
-                Packet packet = _unpacker.Unpack(data);
+                Packet packet = _pwt.ReadPacket();
                 if (packet is InitialPacket)
                 {
-                    QuicConnection connection = ProcessInitialPacket(packet, endpoint);
+                    QuicConnection connection = ProcessInitialPacket(packet, _pwt.LastTransferEndpoint());
                     return connection;
                 }
 
@@ -76,10 +77,7 @@ namespace QuicNet
         {
             while (true)
             {
-                IPEndPoint endpoint = new IPEndPoint(IPAddress.Any, _port);
-                byte[] data = _client.Receive(ref endpoint);
-
-                Packet packet = _unpacker.Unpack(data);
+                Packet packet = _pwt.ReadPacket();
 
                 // Discard unknown packets
                 if (packet == null)
@@ -121,7 +119,7 @@ namespace QuicNet
             {
                 ip.AttachFrame(new ConnectionCloseFrame(ErrorCode.PROTOCOL_VIOLATION, "PMTU have not been reached."));
             }
-            else if (ConnectionPool.AddConnection(cast.SourceConnectionId, out availableConnectionId) == true)
+            else if (ConnectionPool.AddConnection(new ConnectionData(_pwt, cast.SourceConnectionId, 0), out availableConnectionId) == true)
             {
                 // Tell the peer the available connection id
                 ip.SourceConnectionId = (byte)availableConnectionId;

@@ -3,6 +3,7 @@ using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.PacketProcessing;
 using QuicNet.Infrastructure.Packets;
 using QuicNet.Infrastructure.Settings;
+using QuicNet.InternalInfrastructure;
 using QuicNet.Streams;
 using System;
 using System.Collections.Generic;
@@ -13,35 +14,27 @@ namespace QuicNet.Connections
 {
     public class QuicConnection
     {
+        private UInt64 _currentTransferRate;
+        private ConnectionState _state;
+        private Dictionary<UInt64, QuicStream> _streams;
+
+        private PacketWireTransfer _pwt;
+
         public UInt32 ConnectionId { get; private set; }
         public UInt32 PeerConnectionId { get; private set; }
-        public QuicContext Context { get; private set; }
+
         public PacketCreator PacketCreator { get; private set; }
         public UInt64 MaxData { get; private set; }
         public UInt64 MaxStreams { get; private set; }
 
-        private UInt64 _currentTransferRate;
-        private ConnectionState _state;
-        private Dictionary<UInt64, QuicStream> _streams;
-        
-        public QuicConnection(UInt32 id, UInt32 peerConnectionId)
-        {
-            _currentTransferRate = 0;
-            _state = ConnectionState.Open;
-            _streams = new Dictionary<UInt64, QuicStream>();
+        public event Action<QuicStream> OnDataReceived;
 
-            ConnectionId = id;
-            PeerConnectionId = peerConnectionId;
-            // Also creates a new number space
-            PacketCreator = new PacketCreator(ConnectionId, PeerConnectionId);
-            MaxData = QuicSettings.MaxData;
-            MaxStreams = QuicSettings.MaximumStreamId;
-        }
-
-        public void AttachContext(QuicContext context)
+        public QuicStream CreateStream()
         {
-            Context = context;
-            Context.Connection = this;
+            QuicStream stream = new QuicStream(this, new QuickNet.Utilities.StreamId(0, QuickNet.Utilities.StreamType.ClientBidirectional));
+            _streams.Add(0, stream);
+
+            return stream;
         }
 
         public void ProcessFrames(List<Frame> frames)
@@ -129,6 +122,48 @@ namespace QuicNet.Connections
                 MaxStreams = msf.MaximumStreams.Value;
         }
 
+        #region Internal
+  
+        internal QuicConnection(ConnectionData connection)
+        {
+            _currentTransferRate = 0;
+            _state = ConnectionState.Open;
+            _streams = new Dictionary<UInt64, QuicStream>();
+            _pwt = connection.PWT;
+
+            ConnectionId = connection.ConnectionId;
+            PeerConnectionId = connection.PeerConnectionId;
+            // Also creates a new number space
+            PacketCreator = new PacketCreator(ConnectionId, PeerConnectionId);
+            MaxData = QuicSettings.MaxData;
+            MaxStreams = QuicSettings.MaximumStreamId;
+        }
+
+        /// <summary>
+        /// Client only!
+        /// </summary>
+        /// <returns></returns>
+        internal void ReceivePacket()
+        {
+            Packet packet = _pwt.ReadPacket();
+
+            if (packet is ShortHeaderPacket)
+            {
+                ShortHeaderPacket shp = (ShortHeaderPacket)packet;
+                ProcessFrames(shp.GetFrames());
+            }
+        }
+
+        internal bool SendData(Packet packet)
+        {
+            return _pwt.SendPacket(packet);
+        }
+
+        internal void DataReceived(QuicStream context)
+        {
+            OnDataReceived?.Invoke(context);
+        }
+
         internal void TerminateConnection()
         {
             _state = ConnectionState.Draining;
@@ -137,7 +172,39 @@ namespace QuicNet.Connections
         internal void SendMaximumStreamReachedError()
         {
             ShortHeaderPacket packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.STREAM_LIMIT_ERROR, "Maximum number of streams reached.");
-            Context.Send(packet);
+            Send(packet);
         }
+
+        /// <summary>
+        /// Used to send protocol packets to the peer.
+        /// </summary>
+        /// <param name="packet"></param>
+        /// <returns></returns>
+        internal bool Send(Packet packet)
+        {
+            // Encode the packet
+            byte[] data = packet.Encode();
+
+            // Increment the connection transfer rate
+            IncrementRate(data.Length);
+
+            // If the maximum transfer rate is reached, send FLOW_CONTROL_ERROR
+            if (MaximumReached())
+            {
+                packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, "Maximum data transfer reached.");
+
+                TerminateConnection();
+            }
+
+            // Ignore empty packets
+            if (data == null || data.Length <= 0)
+                return true;
+
+            bool result = _pwt.SendPacket(packet);
+
+            return result;
+        }
+
+        #endregion
     }
 }

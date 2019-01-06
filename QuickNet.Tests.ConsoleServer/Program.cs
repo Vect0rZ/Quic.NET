@@ -19,14 +19,29 @@ namespace QuickNet.Tests.ConsoleServer
         static void Example()
         {
             QuicListener listener = new QuicListener(11000);
+            listener.Start();
+
             while (true)
             {
+                // Blocks while waiting for a connection
                 QuicConnection client = listener.AcceptQuicClient();
+
+                // Assign an action when a data is received from that client.
+                client.OnDataReceived += (c) => {
+
+                    byte[] data = c.Data;
+
+                    Console.WriteLine("Data received: " + Encoding.UTF8.GetString(data));
+
+                    c.Send(Encoding.UTF8.GetBytes("Echo!"));
+                };
             }
         }
 
         static void Main(string[] args)
         {
+            Example();
+
             byte[] bytes = new VariableInteger(12345);
             VariableInteger integer = bytes;
             UInt64 uinteger = integer;
@@ -76,11 +91,11 @@ namespace QuickNet.Tests.ConsoleServer
             listener.Start();
         }
 
-        private static void Listener_OnClientConnected(QuicContext obj)
-        {
-            System.Console.WriteLine("Client connected.");
-            obj.OnDataReceived += Obj_OnDataReceived;
-        }
+        //private static void Listener_OnClientConnected(QuicContext obj)
+        //{
+        //    System.Console.WriteLine("Client connected.");
+        //    obj.OnDataReceived += Obj_OnDataReceived;
+        //}
 
         private static void Obj_OnDataReceived(QuicStreamContext obj)
         {
