@@ -50,7 +50,7 @@ namespace QuicNet.Infrastructure.Frames
                 EndOfStream = true;
             
             StreamData = array.ReadBytes((int)Length.Value);
-            ConvertedStreamId = QuickNet.Utilities.StreamId.Decode(ByteUtilities.GetBytes(Length.Value));
+            ConvertedStreamId = QuickNet.Utilities.StreamId.Decode(ByteUtilities.GetBytes(StreamId.Value));
         }
 
         public override byte[] Encode()
