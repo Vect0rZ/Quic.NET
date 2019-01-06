@@ -1,4 +1,5 @@
-﻿using QuicNet.Context;
+﻿using QuickNet.Utilities;
+using QuicNet.Context;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.PacketProcessing;
 using QuicNet.Infrastructure.Packets;
@@ -29,9 +30,9 @@ namespace QuicNet.Connections
 
         public event Action<QuicStream> OnDataReceived;
 
-        public QuicStream CreateStream()
+        public QuicStream CreateStream(StreamType type)
         {
-            QuicStream stream = new QuicStream(this, new QuickNet.Utilities.StreamId(0, QuickNet.Utilities.StreamType.ClientBidirectional));
+            QuicStream stream = new QuicStream(this, new QuickNet.Utilities.StreamId(0, type));
             _streams.Add(0, stream);
 
             return stream;

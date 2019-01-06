@@ -1,6 +1,7 @@
 ﻿using QuickNet.Utilities;
 using QuicNet.Connections;
 using QuicNet.Context;
+using QuicNet.Exceptions;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.Packets;
 using System;
@@ -40,13 +41,19 @@ namespace QuicNet.Streams
 
         public bool Send(byte[] data)
         {
-            ShortHeaderPacket packet = _connection.PacketCreator.CreateDataPacket(this.StreamId.Value, data);
+            if (Type == StreamType.ServerUnidirectional)
+                throw new StreamException("Cannot send data on unidirectional stream.");
+
+            ShortHeaderPacket packet = _connection.PacketCreator.CreateDataPacket(this.StreamId.IntegerValue, data);
 
             return _connection.SendData(packet);
         }
 
         public byte[] Receive()
         {
+            if (Type == StreamType.ClientUnidirectional)
+                throw new StreamException("Cannot receive data on unidirectional stream.");
+
             while (!IsStreamFull() || State == StreamState.Recv)
             {
                 _connection.ReceivePacket();
@@ -65,7 +72,7 @@ namespace QuicNet.Streams
 
         public bool CanSendData()
         {
-            if (Type == StreamType.ServerUnidirectional)
+            if (Type == StreamType.ServerUnidirectional || Type == StreamType.ClientUnidirectional)
                 return false;
 
             if (State == StreamState.Recv || State == StreamState.SizeKnown)

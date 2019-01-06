@@ -16,21 +16,20 @@ namespace QuickNet.Utilities
 
     public class StreamId
     {
-        private UInt64 _id;
-        private StreamType _type;
-
-        public UInt64 Value { get { return _id; } }
-        public StreamType Type { get { return _type; } }
+        public UInt64 Id { get; }
+        public UInt64 IntegerValue { get; }
+        public StreamType Type { get; private set; }
 
         public StreamId(UInt64 id, StreamType type)
         {
-            _id = id;
-            _type = type;
+            Id = id;
+            Type = type;
+            IntegerValue = id << 2 | (UInt64)type;
         }
 
         public static implicit operator byte[](StreamId id)
         {
-            return Encode(id.Value, id.Type);
+            return Encode(id.Id, id.Type);
         }
 
         public static implicit operator StreamId(byte[] data)
@@ -40,7 +39,7 @@ namespace QuickNet.Utilities
 
         public static implicit operator UInt64(StreamId streamId)
         {
-            return streamId.Value;
+            return streamId.Id;
         }
 
         public static byte[] Encode(UInt64 id, StreamType type)
