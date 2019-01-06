@@ -6,6 +6,7 @@ using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.PacketProcessing;
 using QuicNet.Infrastructure.Packets;
 using QuicNet.Infrastructure.Settings;
+using QuicNet.InternalInfrastructure;
 using QuicNet.Streams;
 using System;
 using System.Collections.Generic;
@@ -17,6 +18,9 @@ using System.Threading.Tasks;
 
 namespace QuicNet
 {
+    /// <summary>
+    /// Quic Client. Used for sending and receiving data from a Quic Server.
+    /// </summary>
     public class QuicClient
     {
         private IPEndPoint _peerIp;
@@ -29,6 +33,7 @@ namespace QuicNet
         private InitialPacketCreator _packetCreator;
 
         private UInt64 _maximumStreams = QuicSettings.MaximumStreamId;
+        private PacketWireTransfer _pwt;
 
         public QuicClient()
         {
@@ -37,48 +42,39 @@ namespace QuicNet
             _packetCreator = new InitialPacketCreator();
         }
 
-        public QuicContext Connect(string ip, int port)
+        /// <summary>
+        /// Connect to a remote server.
+        /// </summary>
+        /// <param name="ip">Ip Address</param>
+        /// <param name="port">Port</param>
+        /// <returns></returns>
+        public QuicConnection Connect(string ip, int port)
         {
             // Establish socket connection
             _peerIp = new IPEndPoint(IPAddress.Parse(ip), port);
 
+            // Initialize packet reader
+            _pwt = new PacketWireTransfer(_client, _peerIp);
+
             // Start initial protocol process
             InitialPacket connectionPacket = _packetCreator.CreateInitialPacket(0, 0);
-            byte[] data = connectionPacket.Encode();
 
             // Send the initial packet
-            _client.Send(data, data.Length, _peerIp);
+            _pwt.SendPacket(connectionPacket);
 
             // Await response for sucessfull connection creation by the server
-            byte[] peerData = _client.Receive(ref _peerIp);
-            if (peerData == null)
-                throw new QuicConnectivityException("Server did not respond properly.");
-
-            Packet packet = _unpacker.Unpack(peerData);
-            if ((packet is InitialPacket) == false)
-                throw new QuicConnectivityException("Server did not respond properly.");
-
-            InitialPacket ini = (InitialPacket)packet;
+            InitialPacket packet = (InitialPacket)_pwt.ReadPacket();
 
             HandleInitialFrames(packet);
-            EstablishConnection(ini.SourceConnectionId, ini.SourceConnectionId);
+            EstablishConnection(packet.SourceConnectionId, packet.SourceConnectionId);
 
-            // Create the QuicContext
-            QuicContext context = new QuicContext(_client, _peerIp);
-
-            // Cross reference with Connection
-            _connection.AttachContext(context);
-
-            return context;
+            return _connection;
         }
 
-        public QuicStreamContext CreateStream()
-        {
-            QuicStream stream = new QuicStream(_connection, new StreamId(1, StreamType.ClientBidirectional));
-            
-            return stream.Context;
-        }
-
+        /// <summary>
+        /// Handles initial packet's frames. (In most cases protocol frames)
+        /// </summary>
+        /// <param name="packet"></param>
         private void HandleInitialFrames(Packet packet)
         {
             List<Frame> frames = packet.GetFrames();
@@ -104,9 +100,15 @@ namespace QuicNet
             }
         }
 
+        /// <summary>
+        /// Create a new connection
+        /// </summary>
+        /// <param name="connectionId"></param>
+        /// <param name="peerConnectionId"></param>
         private void EstablishConnection(UInt32 connectionId, UInt32 peerConnectionId)
         {
-            _connection = new QuicConnection(connectionId, peerConnectionId);
+            ConnectionData connection = new ConnectionData(_pwt, connectionId, peerConnectionId);
+            _connection = new QuicConnection(connection);
         }
     }
 }

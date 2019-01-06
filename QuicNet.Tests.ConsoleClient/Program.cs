@@ -1,4 +1,6 @@
+using QuicNet.Connections;
 using QuicNet.Context;
+using QuicNet.Streams;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,12 +13,21 @@ namespace QuicNet.Tests.ConsoleClient
     {
         static void Main(string[] args)
         {
+            Console.WriteLine("Starting client.");
             QuicClient client = new QuicClient();
-            QuicContext context = client.Connect("127.0.0.1", 11000);   // Connect to peer (Server)
-            QuicStreamContext sc = client.CreateStream();               // Create a data stream
-            sc.Send(Encoding.UTF8.GetBytes("Hello from Client!"));      // Send Data
+            Console.WriteLine("Connecting to server.");
+            QuicConnection connection = client.Connect("127.0.0.1", 11000);   // Connect to peer (Server)
+            Console.WriteLine("Connected");
+            
+            QuicStream stream = connection.CreateStream(QuickNet.Utilities.StreamType.ClientUnidirectional); // Create a data stream
+            Console.WriteLine("Create stream with id: " + stream.StreamId.IntegerValue.ToString());
 
-            sc.Close();                                                 // Close the stream after processing
+            Console.WriteLine("Send 'Hello From Client!'");
+            stream.Send(Encoding.UTF8.GetBytes("Hello from Client!"));        // Send Data
+            Console.WriteLine("Waiting for message from the server");
+            // byte[] data = stream.Receive();                                   // Receive from server
+            // Console.WriteLine("Received: " + Encoding.UTF8.GetString(data));
+            Console.ReadKey();
         }
     }
 }

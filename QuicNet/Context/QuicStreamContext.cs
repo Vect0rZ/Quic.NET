@@ -17,7 +17,7 @@ namespace QuicNet.Context
         /// <summary>
         /// The connection's context.
         /// </summary>
-        public QuicContext ConnectionContext { get; set; }
+        // public QuicContext ConnectionContext { get; set; }
 
         /// <summary>
         /// Data received
@@ -43,11 +43,13 @@ namespace QuicNet.Context
             if (data == null || data.Length <= 0)
                 return true;
 
-            Packet packet = ConnectionContext.Connection.PacketCreator.CreateDataPacket(StreamId, data);
+            // Packet packet = ConnectionContext.Connection.PacketCreator.CreateDataPacket(StreamId, data);
 
-            bool result = ConnectionContext.Send(packet);
+            // bool result = ConnectionContext.Send(packet);
 
-            return result;
+            //return result;
+
+            return false;
         }
 
         public void Close()
@@ -65,11 +67,10 @@ namespace QuicNet.Context
         /// </summary>
         /// <param name="data"></param>
         /// <param name="streamId"></param>
-        internal QuicStreamContext(QuicStream stream, QuicContext context)
+        internal QuicStreamContext(QuicStream stream)
         {
             Stream = stream;
             StreamId = stream.StreamId;
-            ConnectionContext = context;
         }
 
         internal void SetData(byte[] data)

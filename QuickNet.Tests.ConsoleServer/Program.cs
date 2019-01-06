@@ -1,5 +1,6 @@
 ﻿using QuickNet.Utilities;
 using QuicNet;
+using QuicNet.Connections;
 using QuicNet.Context;
 using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Frames;
@@ -15,8 +16,32 @@ namespace QuickNet.Tests.ConsoleServer
 {
     class Program
     {
+        static void Example()
+        {
+            QuicListener listener = new QuicListener(11000);
+            listener.Start();
+
+            while (true)
+            {
+                // Blocks while waiting for a connection
+                QuicConnection client = listener.AcceptQuicClient();
+
+                // Assign an action when a data is received from that client.
+                client.OnDataReceived += (c) => {
+
+                    byte[] data = c.Data;
+
+                    Console.WriteLine("Data received: " + Encoding.UTF8.GetString(data));
+
+                    c.Send(Encoding.UTF8.GetBytes("Echo!"));
+                };
+            }
+        }
+
         static void Main(string[] args)
         {
+            Example();
+
             byte[] bytes = new VariableInteger(12345);
             VariableInteger integer = bytes;
             UInt64 uinteger = integer;
@@ -62,15 +87,15 @@ namespace QuickNet.Tests.ConsoleServer
             StreamId streamId = streamIdData;
 
             QuicListener listener = new QuicListener(11000);
-            listener.OnClientConnected += Listener_OnClientConnected;
+            // listener.OnClientConnected += Listener_OnClientConnected;
             listener.Start();
         }
 
-        private static void Listener_OnClientConnected(QuicContext obj)
-        {
-            System.Console.WriteLine("Client connected.");
-            obj.OnDataReceived += Obj_OnDataReceived;
-        }
+        //private static void Listener_OnClientConnected(QuicContext obj)
+        //{
+        //    System.Console.WriteLine("Client connected.");
+        //    obj.OnDataReceived += Obj_OnDataReceived;
+        //}
 
         private static void Obj_OnDataReceived(QuicStreamContext obj)
         {

@@ -1,6 +1,7 @@
 ﻿using QuicNet.Context;
 using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Settings;
+using QuicNet.InternalInfrastructure;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,7 +12,7 @@ namespace QuicNet.Connections
     /// Since UDP is a stateless protocol, the ConnectionPool is used as a Conenction Manager to 
     /// route packets to the right "Connection".
     /// </summary>
-    public static class ConnectionPool
+    internal static class ConnectionPool
     {
         /// <summary>
         /// Starting point for connection identifiers.
@@ -30,11 +31,11 @@ namespace QuicNet.Connections
         /// </summary>
         /// <param name="id">Connection Id</param>
         /// <returns></returns>
-        public static bool AddConnection(UInt32 id, out UInt32 availableConnectionId)
+        public static bool AddConnection(ConnectionData connection, out UInt32 availableConnectionId)
         {
             availableConnectionId = 0;
 
-            if (_pool.ContainsKey(id))
+            if (_pool.ContainsKey(connection.ConnectionId))
                 return false;
 
             if (_pool.Count > QuicSettings.MaximumConnectionIds)
@@ -42,7 +43,8 @@ namespace QuicNet.Connections
 
             availableConnectionId = _ns.Get();
 
-            _pool.Add(availableConnectionId, new QuicConnection(availableConnectionId, availableConnectionId));
+            connection.PeerConnectionId = connection.ConnectionId;
+            _pool.Add(availableConnectionId, new QuicConnection(connection));
 
             return true;
         }
@@ -53,16 +55,6 @@ namespace QuicNet.Connections
                 return null;
 
             return _pool[id];
-        }
-
-        public static bool AttachContext(UInt32 id, QuicContext context)
-        {
-            if (_pool.ContainsKey(id) == false)
-                return false;
-
-            _pool[id].AttachContext(context);
-
-            return true;
         }
     }
 }

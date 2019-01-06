@@ -1,7 +1,9 @@
 ﻿using QuickNet.Utilities;
 using QuicNet.Connections;
 using QuicNet.Context;
+using QuicNet.Exceptions;
 using QuicNet.Infrastructure.Frames;
+using QuicNet.Infrastructure.Packets;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +19,17 @@ namespace QuicNet.Streams
         private SortedList<UInt64, byte[]> _data = new SortedList<ulong, byte[]>();
         private QuicConnection _connection;
 
-        public QuicStreamContext Context;
-
         public StreamState State { get; set; }
         public StreamType Type { get; set; }
         public StreamId StreamId { get; }
+
+        public byte[] Data
+        {
+            get
+            {
+                return _data.SelectMany(v => v.Value).ToArray();
+            }
+        }
 
         public QuicStream(QuicConnection connection, StreamId streamId)
         {
@@ -29,7 +37,29 @@ namespace QuicNet.Streams
             Type = streamId.Type;
 
             _connection = connection;
-            Context = new QuicStreamContext(this, _connection.Context);
+        }
+
+        public bool Send(byte[] data)
+        {
+            if (Type == StreamType.ServerUnidirectional)
+                throw new StreamException("Cannot send data on unidirectional stream.");
+
+            ShortHeaderPacket packet = _connection.PacketCreator.CreateDataPacket(this.StreamId.IntegerValue, data);
+
+            return _connection.SendData(packet);
+        }
+
+        public byte[] Receive()
+        {
+            if (Type == StreamType.ClientUnidirectional)
+                throw new StreamException("Cannot receive data on unidirectional stream.");
+
+            while (!IsStreamFull() || State == StreamState.Recv)
+            {
+                _connection.ReceivePacket();
+            }
+
+            return Data;
         }
 
         public void ResetStream(ResetStreamFrame frame)
@@ -42,7 +72,7 @@ namespace QuicNet.Streams
 
         public bool CanSendData()
         {
-            if (Type == StreamType.ServerUnidirectional)
+            if (Type == StreamType.ServerUnidirectional || Type == StreamType.ClientUnidirectional)
                 return false;
 
             if (State == StreamState.Recv || State == StreamState.SizeKnown)
@@ -75,14 +105,10 @@ namespace QuicNet.Streams
 
             if (State == StreamState.SizeKnown && IsStreamFull())
             {
-                byte[] aggregatedData = _data.SelectMany(v => v.Value).ToArray();
-                Context.SetData(data);
-
-                _connection.Context.DataReceived(Context);
+                _connection.DataReceived(this);
 
                 State = StreamState.DataRecvd;
             }
-                
         }
 
         private bool IsStreamFull()
