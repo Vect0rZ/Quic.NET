@@ -49,6 +49,12 @@ namespace QuicNet.Connections
             return true;
         }
 
+        public static void RemoveConnection(UInt32 id)
+        {
+            if (_pool.ContainsKey(id))
+                _pool.Remove(id);
+        }
+
         public static QuicConnection Find(UInt32 id)
         {
             if (_pool.ContainsKey(id) == false)

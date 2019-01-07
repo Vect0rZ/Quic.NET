@@ -30,8 +30,16 @@ namespace QuicNet.Connections
 
         public event Action<QuicStream> OnDataReceived;
 
+        /// <summary>
+        /// Creates a new stream for sending/receiving data.
+        /// </summary>
+        /// <param name="type">Type of the stream (Uni-Bidirectional)</param>
+        /// <returns>A new stream instance or Null if the connection is terminated.</returns>
         public QuicStream CreateStream(StreamType type)
         {
+            if (_state != ConnectionState.Open)
+                return null;
+
             QuicStream stream = new QuicStream(this, new QuickNet.Utilities.StreamId(0, type));
             _streams.Add(0, stream);
 
@@ -206,6 +214,9 @@ namespace QuicNet.Connections
         internal void TerminateConnection()
         {
             _state = ConnectionState.Draining;
+            _streams.Clear();
+
+            ConnectionPool.RemoveConnection(this.ConnectionId);
         }
 
         internal void SendMaximumStreamReachedError()
