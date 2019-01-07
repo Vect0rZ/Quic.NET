@@ -128,6 +128,8 @@ Following the Fork and Pull GitHub workflow:
   4. **Push** your work back up to your fork;
   5. Submit a **Pull request** so that the changes go through a review.
 
+For more info, read the [CONTRIBUTING](https://github.com/Vect0rZ/Quic.NET/blob/master/CONTRIBUTING.md)
+
 # More
 
 The quic-transport draft can be found, as previously mentioned at [quic-transport](https://datatracker.ietf.org/doc/draft-ietf-quic-transport/?include_text=1).
