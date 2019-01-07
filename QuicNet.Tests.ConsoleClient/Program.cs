@@ -19,14 +19,22 @@ namespace QuicNet.Tests.ConsoleClient
             QuicConnection connection = client.Connect("127.0.0.1", 11000);   // Connect to peer (Server)
             Console.WriteLine("Connected");
             
-            QuicStream stream = connection.CreateStream(QuickNet.Utilities.StreamType.ClientUnidirectional); // Create a data stream
+            QuicStream stream = connection.CreateStream(QuickNet.Utilities.StreamType.ClientBidirectional); // Create a data stream
             Console.WriteLine("Create stream with id: " + stream.StreamId.IntegerValue.ToString());
 
             Console.WriteLine("Send 'Hello From Client!'");
             stream.Send(Encoding.UTF8.GetBytes("Hello from Client!"));        // Send Data
             Console.WriteLine("Waiting for message from the server");
-            // byte[] data = stream.Receive();                                   // Receive from server
-            // Console.WriteLine("Received: " + Encoding.UTF8.GetString(data));
+            try
+            {
+                byte[] data = stream.Receive();                                   // Receive from server
+                Console.WriteLine("Received: " + Encoding.UTF8.GetString(data));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
             Console.ReadKey();
         }
     }

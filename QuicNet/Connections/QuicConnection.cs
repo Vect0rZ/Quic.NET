@@ -1,5 +1,6 @@
 ﻿using QuickNet.Utilities;
 using QuicNet.Context;
+using QuicNet.Exceptions;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.PacketProcessing;
 using QuicNet.Infrastructure.Packets;
@@ -17,6 +18,7 @@ namespace QuicNet.Connections
     {
         private UInt64 _currentTransferRate;
         private ConnectionState _state;
+        private string _lastError;
         private Dictionary<UInt64, QuicStream> _streams;
 
         private PacketWireTransfer _pwt;
@@ -52,8 +54,6 @@ namespace QuicNet.Connections
             {
                 if (frame.Type == 0x01)
                     OnRstStreamFrame(frame);
-                if (frame.Type == 0x02)
-                    OnConnectionCloseFrame(frame);
                 if (frame.Type == 0x04)
                     OnRstStreamFrame(frame);
                 if (frame.Type >= 0x08 && frame.Type <= 0x0f)
@@ -66,6 +66,8 @@ namespace QuicNet.Connections
                     OnMaxStreamFrame(frame);
                 if (frame.Type == 0x14)
                     OnDataBlockedFrame(frame);
+                if (frame.Type == 0x1c)
+                    OnConnectionCloseFrame(frame);
             }
         }
 
@@ -84,7 +86,9 @@ namespace QuicNet.Connections
 
         private void OnConnectionCloseFrame(Frame frame)
         {
+            ConnectionCloseFrame ccf = (ConnectionCloseFrame)frame;
             _state = ConnectionState.Draining;
+            _lastError = ccf.ReasonPhrase;
         }
 
         private void OnRstStreamFrame(Frame frame)
@@ -175,6 +179,7 @@ namespace QuicNet.Connections
         {
             _currentTransferRate = 0;
             _state = ConnectionState.Open;
+            _lastError = string.Empty;
             _streams = new Dictionary<UInt64, QuicStream>();
             _pwt = connection.PWT;
 
@@ -199,6 +204,18 @@ namespace QuicNet.Connections
                 ShortHeaderPacket shp = (ShortHeaderPacket)packet;
                 ProcessFrames(shp.GetFrames());
             }
+
+            // If the connection has been closed
+            if (_state == ConnectionState.Draining)
+            {
+                if (string.IsNullOrWhiteSpace(_lastError))
+                    _lastError = "Protocol error";
+
+                TerminateConnection();
+
+                throw new QuicConnectivityException(_lastError);
+            }
+
         }
 
         internal bool SendData(Packet packet)

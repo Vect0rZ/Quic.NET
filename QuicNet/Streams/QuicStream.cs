@@ -127,7 +127,7 @@ namespace QuicNet.Streams
             // Terminate connection if maximum stream data is reached
             if (_currentTransferRate >= _maximumStreamData)
             {
-                ShortHeaderPacket errorPacket = _connection.PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, "Maximum stream data reached.");
+                ShortHeaderPacket errorPacket = _connection.PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, "Maximum stream data transfer reached.");
                 _connection.SendData(errorPacket);
                 _connection.TerminateConnection();
 
