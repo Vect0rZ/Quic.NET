@@ -44,7 +44,13 @@ namespace QuicNet.Streams
             if (Type == StreamType.ServerUnidirectional)
                 throw new StreamException("Cannot send data on unidirectional stream.");
 
+            _connection.IncrementRate(data.Length);
+
             ShortHeaderPacket packet = _connection.PacketCreator.CreateDataPacket(this.StreamId.IntegerValue, data);
+            if (_connection.MaximumReached())
+            {
+                packet.AttachFrame(new DataBlockedFrame((UInt64)data.Length));
+            }
 
             return _connection.SendData(packet);
         }

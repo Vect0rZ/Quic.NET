@@ -10,15 +10,28 @@ namespace QuicNet.Infrastructure.Frames
     public class DataBlockedFrame : Frame
     {
         public override byte Type => 0x14;
+        public VariableInteger DataLimit { get; set; }
+
+        public DataBlockedFrame(UInt64 dataLimit)
+        {
+            DataLimit = dataLimit;
+        }
 
         public override void Decode(ByteArray array)
         {
-            throw new NotImplementedException();
+            byte type = array.ReadByte();
+            DataLimit = array.ReadVariableInteger();
         }
 
         public override byte[] Encode()
         {
-            throw new NotImplementedException();
+            List<byte> result = new List<byte>();
+            result.Add(Type);
+            byte[] dataLimit = DataLimit;
+
+            result.AddRange(dataLimit);
+
+            return result.ToArray();
         }
     }
 }

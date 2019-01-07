@@ -54,6 +54,8 @@ namespace QuicNet.Connections
                     OnMaxDataFrame(frame);
                 if (frame.Type >= 0x12 && frame.Type <= 0x13)
                     OnMaxStreamFrame(frame);
+                if (frame.Type == 0x14)
+                    OnDataBlockedFrame(frame);
             }
         }
 
@@ -121,6 +123,15 @@ namespace QuicNet.Connections
             MaxStreamsFrame msf = (MaxStreamsFrame)frame;
             if (msf.MaximumStreams > MaxStreams)
                 MaxStreams = msf.MaximumStreams.Value;
+        }
+
+        private void OnDataBlockedFrame(Frame frame)
+        {
+            // TODO: Tuning of data transfer.
+            // Since no stream id is present on this frame, we should be
+            // stopping the connection.
+
+            TerminateConnection();
         }
 
         #region Internal
