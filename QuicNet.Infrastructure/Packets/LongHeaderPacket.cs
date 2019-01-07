@@ -7,7 +7,7 @@ namespace QuicNet.Infrastructure.Packets
 {
     public class LongHeaderPacket : Packet
     {
-        public override byte Type => 0xC0;
+        public override byte Type => 0xC0; // 1100 0000
 
         public byte DCIL_SCIL { get; set; }
         public byte DestinationConnectionId { get; set; }

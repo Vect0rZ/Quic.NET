@@ -7,7 +7,7 @@ namespace QuicNet.Infrastructure.Packets
 {
     public class InitialPacket : Packet
     {
-        public override byte Type => 0x7F | 1 << 7;
+        public override byte Type => 0x7F | 1 << 7; // 1111 1111
         
         public byte DCIL_SCIL { get; set; }
         public byte DestinationConnectionId { get; set; }
