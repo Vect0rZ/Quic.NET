@@ -43,9 +43,15 @@ namespace QuicNet.Infrastructure.Settings
         public const int MaximumFramesPerPacket = 10;
 
         /// <summary>
-        /// Maximum data that can be transferred for a Connection/Stream.
-        /// Currently 10Mb.
+        /// Maximum data that can be transferred for a Connection.
+        /// Currently 10MB.
         /// </summary>
         public const int MaxData = 10 * 1000 * 1000;
+
+        /// <summary>
+        /// Maximum data that can be transferred for a Stream.
+        /// Currently 0.078125 MB, which is MaxData / MaximumStreamId
+        /// </summary>
+        public const int MaxStreamData = 78125;
     }
 }

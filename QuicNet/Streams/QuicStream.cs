@@ -4,6 +4,7 @@ using QuicNet.Context;
 using QuicNet.Exceptions;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.Packets;
+using QuicNet.Infrastructure.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -18,6 +19,8 @@ namespace QuicNet.Streams
     {
         private SortedList<UInt64, byte[]> _data = new SortedList<ulong, byte[]>();
         private QuicConnection _connection;
+        private UInt64 _maximumStreamData;
+        private UInt64 _currentTransferRate;
 
         public StreamState State { get; set; }
         public StreamType Type { get; set; }
@@ -35,6 +38,9 @@ namespace QuicNet.Streams
         {
             StreamId = streamId;
             Type = streamId.Type;
+
+            _maximumStreamData = QuicSettings.MaxStreamData;
+            _currentTransferRate = 0;
 
             _connection = connection;
         }
@@ -78,6 +84,11 @@ namespace QuicNet.Streams
             _data.Clear();
         }
 
+        public void SetMaximumStreamData(UInt64 maximumData)
+        {
+            _maximumStreamData = maximumData;
+        }
+
         public bool CanSendData()
         {
             if (Type == StreamType.ServerUnidirectional || Type == StreamType.ClientUnidirectional)
@@ -110,6 +121,18 @@ namespace QuicNet.Streams
             // or fin frame came before the data frames
             if (frame.EndOfStream)
                 State = StreamState.SizeKnown;
+
+            _currentTransferRate += (UInt64)data.Length;
+
+            // Terminate connection if maximum stream data is reached
+            if (_currentTransferRate >= _maximumStreamData)
+            {
+                ShortHeaderPacket errorPacket = _connection.PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, "Maximum stream data reached.");
+                _connection.SendData(errorPacket);
+                _connection.TerminateConnection();
+
+                return;
+            }
 
             if (State == StreamState.SizeKnown && IsStreamFull())
             {

@@ -52,6 +52,8 @@ namespace QuicNet.Connections
                     OnStreamFrame(frame);
                 if (frame.Type == 0x10)
                     OnMaxDataFrame(frame);
+                if (frame.Type == 0x11)
+                    OnMaxStreamDataFrame(frame);
                 if (frame.Type >= 0x12 && frame.Type <= 0x13)
                     OnMaxStreamFrame(frame);
                 if (frame.Type == 0x14)
@@ -116,6 +118,17 @@ namespace QuicNet.Connections
             MaxDataFrame sf = (MaxDataFrame)frame;
             if (sf.MaximumData.Value > MaxData)
                 MaxData = sf.MaximumData.Value;
+        }
+
+        private void OnMaxStreamDataFrame(Frame frame)
+        {
+            MaxStreamDataFrame msdf = (MaxStreamDataFrame)frame;
+            if (_streams.ContainsKey(msdf.StreamId))
+            {
+                // Find and set the new maximum stream data on the stream
+                QuicStream stream = _streams[msdf.ConvertedStreamId.Id];
+                stream.SetMaximumStreamData(msdf.MaximumStreamData.Value);
+            }
         }
 
         private void OnMaxStreamFrame(Frame frame)
