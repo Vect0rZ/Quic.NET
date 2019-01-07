@@ -12,6 +12,11 @@ namespace QuicNet.Infrastructure.Frames
         public override byte Type => 0x14;
         public VariableInteger DataLimit { get; set; }
 
+        public DataBlockedFrame()
+        {
+
+        }
+
         public DataBlockedFrame(UInt64 dataLimit)
         {
             DataLimit = dataLimit;

@@ -48,13 +48,15 @@ namespace QuicNet.Streams
 
             ShortHeaderPacket packet = _connection.PacketCreator.CreateDataPacket(this.StreamId.IntegerValue, data);
             if (_connection.MaximumReached())
-            {
-                packet.AttachFrame(new DataBlockedFrame((UInt64)data.Length));
-            }
+                packet.AttachFrame(new StreamDataBlockedFrame(StreamId.IntegerValue, (UInt64)data.Length));
 
             return _connection.SendData(packet);
         }
 
+        /// <summary>
+        /// Client only!
+        /// </summary>
+        /// <returns></returns>
         public byte[] Receive()
         {
             if (Type == StreamType.ClientUnidirectional)
@@ -115,6 +117,11 @@ namespace QuicNet.Streams
 
                 State = StreamState.DataRecvd;
             }
+        }
+
+        public void ProcessStreamDataBlocked(StreamDataBlockedFrame frame)
+        {
+            State = StreamState.DataRecvd;
         }
 
         private bool IsStreamFull()

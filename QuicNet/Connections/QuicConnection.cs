@@ -94,7 +94,7 @@ namespace QuicNet.Connections
         private void OnStreamFrame(Frame frame)
         {
             StreamFrame sf = (StreamFrame)frame;
-            if (_streams.ContainsKey(sf.StreamId.Value) == false)
+            if (_streams.ContainsKey(sf.ConvertedStreamId.Id) == false)
             {
                 QuicStream stream = new QuicStream(this, sf.ConvertedStreamId);
                 stream.ProcessData(sf);
@@ -132,6 +132,20 @@ namespace QuicNet.Connections
             // stopping the connection.
 
             TerminateConnection();
+        }
+
+        private void OnStreamDataBlockedFrame(Frame frame)
+        {
+            StreamDataBlockedFrame sdbf = (StreamDataBlockedFrame)frame;
+
+            if (_streams.ContainsKey(sdbf.ConvertedStreamId.Id) == false)
+                return;
+            QuicStream stream = _streams[sdbf.ConvertedStreamId.Id];
+
+            stream.ProcessStreamDataBlocked(sdbf);
+
+            // Remove the stream from the connection
+            _streams.Remove(sdbf.ConvertedStreamId.Id);
         }
 
         #region Internal
