@@ -185,8 +185,10 @@ namespace QuicNet
             ShortHeaderPacket shp = (ShortHeaderPacket)packet;
 
             QuicConnection connection = ConnectionPool.Find(shp.DestinationConnectionId);
+
+            // No suitable connection found. Discard the packet.
             if (connection == null)
-                return; // TODO: Figure out if the packet should be discarded in that case?
+                return;
 
             connection.ProcessFrames(shp.GetFrames());
         }
