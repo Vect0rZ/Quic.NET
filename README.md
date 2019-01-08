@@ -18,7 +18,7 @@
 # Table of contents
    - [What is QuicNet](#what-is-quicnet)
    - [Get started](#get-started)
-      * [Quic.Net In Action](#in-action)
+      * [Preview](#gif)
       * [Server](#server)
       * [Client](#client)
    - [What is QUIC](#what-is-quic)
@@ -41,7 +41,7 @@ and does NOT YET offer implementation of the following related drafts:
 # Get started
 Minimal working examples
 
-## In action
+## Preview
 
 ![Alt](https://media.giphy.com/media/9PgwY6Wy8HtjtxoMAt/giphy.gif)
 
