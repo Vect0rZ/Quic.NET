@@ -18,7 +18,7 @@
 # Table of contents
    - [What is QuicNet](#what-is-quicnet)
    - [Get started](#get-started)
-      * [Preview](#gif)
+      * [Preview](#preview)
       * [Server](#server)
       * [Client](#client)
    - [What is QUIC](#what-is-quic)
