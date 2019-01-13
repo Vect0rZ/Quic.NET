@@ -38,6 +38,11 @@ namespace QuicNet.Infrastructure.Settings
         public const bool ShouldBufferPacketsBeforeConnection = false;
 
         /// <summary>
+        /// Time before the buffer expires. 30 seconds.
+        /// </summary>
+        public const double BufferTimeInverval = 30000;
+
+        /// <summary>
         /// Limit the maximum number of frames a packet can carry.
         /// </summary>
         public const int MaximumFramesPerPacket = 10;

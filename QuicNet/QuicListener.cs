@@ -1,4 +1,5 @@
 ﻿using QuickNet.Utilities;
+using QuicNet.Buffers;
 using QuicNet.Connections;
 using QuicNet.Context;
 using QuicNet.Exceptions;
@@ -27,6 +28,7 @@ namespace QuicNet
 
         private Unpacker _unpacker;
         private InitialPacketCreator _packetCreator;
+        private Dictionary<UInt64, ConnectionBuffer> _buffers;
 
         private PacketWireTransfer _pwt;
 
@@ -44,6 +46,7 @@ namespace QuicNet
             
             _unpacker = new Unpacker();
             _packetCreator = new InitialPacketCreator();
+            _buffers = new Dictionary<ulong, ConnectionBuffer>();
         }
 
         /// <summary>
@@ -83,6 +86,11 @@ namespace QuicNet
                 if (packet is InitialPacket)
                 {
                     QuicConnection connection = ProcessInitialPacket(packet, _pwt.LastTransferEndpoint());
+
+                    // If the connection has been successfully created, replay buffer.
+                    if (connection != null && _buffers.ContainsKey(connection.ConnectionId))
+                        ReplayBuffer(connection.ConnectionId);
+
                     return connection;
                 }
 
@@ -186,11 +194,43 @@ namespace QuicNet
 
             QuicConnection connection = ConnectionPool.Find(shp.DestinationConnectionId);
 
-            // No suitable connection found. Discard the packet.
+            // No suitable connection found. Buffer the packet.
             if (connection == null)
+            {
+                BufferPacket(shp.DestinationConnectionId, packet);
+
                 return;
+            }
 
             connection.ProcessFrames(shp.GetFrames());
+        }
+
+        private void BufferPacket(UInt64 connectionId, Packet packet)
+        {
+            if (_buffers.ContainsKey(connectionId) == false)
+            {
+                ConnectionBuffer buffer = new ConnectionBuffer();
+                buffer.Push(packet);
+
+                _buffers.Add(connectionId, buffer);
+            }
+            else
+            {
+                ConnectionBuffer buffer = _buffers[connectionId];
+                buffer.Push(packet);
+            }
+        }
+
+        private void ReplayBuffer(UInt64 connectionId)
+        {
+            ConnectionBuffer buffer = _buffers[connectionId];
+            List<Packet> packets = buffer.ReadAll();
+
+            // Replay
+            foreach (Packet bufferedPacket in packets)
+            {
+                OrchestratePacket(bufferedPacket);
+            }
         }
     }
 }
