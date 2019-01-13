@@ -11,7 +11,7 @@
     <a href="https://semver.org/">
         <img src="https://img.shields.io/badge/semver-2.0.0-blue.svg">
     </a>
-    <img src="https://img.shields.io/badge/version-0.1.2 alpha-red.svg">
+    <img src="https://img.shields.io/badge/version-0.2.0 alpha-green.svg">
 </p>
 <h1 align="center"> QuicNet
 
