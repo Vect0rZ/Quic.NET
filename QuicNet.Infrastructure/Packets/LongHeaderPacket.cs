@@ -28,6 +28,14 @@ namespace QuicNet.Infrastructure.Packets
 
             Version = array.ReadUInt32();
 
+            DCID = array.ReadByte();
+            if (DCID > 0)
+                DestinationConnectionId = array.ReadByte();
+
+            SCID = array.ReadByte();
+            if (SCID > 0)
+                SourceConnectionId = array.ReadByte();
+
             this.DecodeFrames(array);
         }
 
