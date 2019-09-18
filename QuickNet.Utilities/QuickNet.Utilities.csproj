@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="ByteArray.cs" />
     <Compile Include="ByteUtilities.cs" />
+    <Compile Include="GranularInteger.cs" />
     <Compile Include="StreamId.cs" />
     <Compile Include="VariableInteger.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

@@ -7,16 +7,18 @@ namespace QuicNet.Infrastructure.Packets
 {
     public class ShortHeaderPacket : Packet
     {
-        public override byte Type => 0x43; // 0100 0011;
+        public override byte Type => 0x40; // 0100 0000;
         public byte DestinationConnectionId { get; set; }
-        public UInt32 PacketNumber { get; set; }
+        public GranularInteger PacketNumber { get; set; }
 
         public override void Decode(byte[] packet)
         {
             ByteArray array = new ByteArray(packet);
             byte type = array.ReadByte();
             DestinationConnectionId = array.ReadByte();
-            PacketNumber = array.ReadUInt32();
+
+            int pnSize = (type & 0x03) + 1;
+            PacketNumber = array.ReadBytes(pnSize);
 
             DecodeFrames(array);
         }
@@ -24,11 +26,13 @@ namespace QuicNet.Infrastructure.Packets
         public override byte[] Encode()
         {
             byte[] frames = EncodeFrames();
-
+           
             List<byte> result = new List<byte>();
-            result.Add(Type);
+            result.Add((byte)(Type | (PacketNumber.Size - 1)));
             result.Add(DestinationConnectionId);
-            result.AddRange(ByteUtilities.GetBytes(PacketNumber));
+
+            byte[] pnBytes = PacketNumber;
+            result.AddRange(pnBytes);
             result.AddRange(frames);
 
             return result.ToArray();
