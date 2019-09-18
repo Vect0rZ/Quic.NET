@@ -1,3 +1,12 @@
+# Update 08.18.2019
+I might not be obvious, but the library is still in development!
+
+The reason for the lack of updates are two:
+  1. **Rapid** RFC changes;
+  2. **Draft 23 Point 5.3:** Life of a QUIC Connection is still **TBD**. This is a blocker for the overal architecture of the library;
+  
+Expect more updates soon!
+
 <p align="center">
     <img src="https://i.imgur.com/r3nH7de.png"></img>
 </p>
