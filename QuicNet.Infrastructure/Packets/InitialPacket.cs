@@ -7,31 +7,37 @@ namespace QuicNet.Infrastructure.Packets
 {
     public class InitialPacket : Packet
     {
-        public override byte Type => 0x7F | 1 << 7; // 1111 1111
+        public override byte Type => 0xDC; // 1101 1100
         
-        public byte DCIL_SCIL { get; set; }
+        public byte DCID { get; set; }
         public byte DestinationConnectionId { get; set; }
+        public byte SCID { get; set; }
         public byte SourceConnectionId { get; set; }
         public VariableInteger TokenLength { get; set; }
         public byte[] Token { get; set; }
         public VariableInteger Length { get; set; }
-        public UInt32 PacketNumber { get; set; }
+        public GranularInteger PacketNumber { get; set; }
 
         public InitialPacket()
         {
-            DCIL_SCIL = 0;
+            DCID = SCID = 1;
         }
 
         public override void Decode(byte[] packet)
         {
             ByteArray array = new ByteArray(packet);
-            array.ReadByte();
-            Version = array.ReadUInt32();
-            DCIL_SCIL = array.ReadByte();
+            byte type = array.ReadByte();
+            // Size of the packet PacketNumber is determined by the last 2 bits of the Type.
+            int pnSize = (type & 0x03) + 1;
 
-            if ((DCIL_SCIL & 0xF0) != 0)
+            Version = array.ReadUInt32();
+
+            DCID = array.ReadByte();
+            if (DCID > 0)
                 DestinationConnectionId = array.ReadByte();
-            if ((DCIL_SCIL & 0x0F) != 0)
+
+            SCID = array.ReadByte();
+            if (SCID > 0)
                 SourceConnectionId = array.ReadByte();
 
             TokenLength = array.ReadVariableInteger();
@@ -39,9 +45,9 @@ namespace QuicNet.Infrastructure.Packets
                 Token = array.ReadBytes((int)TokenLength.Value);
 
             Length = array.ReadVariableInteger();
-            PacketNumber = array.ReadUInt32();
+            PacketNumber = array.ReadBytes(pnSize);
 
-            Length = Length - 4;
+            Length = Length - PacketNumber.Size;
 
             this.DecodeFrames(array);
         }
@@ -51,27 +57,23 @@ namespace QuicNet.Infrastructure.Packets
             byte[] frames = EncodeFrames();
 
             List<byte> result = new List<byte>();
-            result.Add(Type);
+            result.Add((byte)(Type | (PacketNumber.Size - 1)));
             result.AddRange(ByteUtilities.GetBytes(Version));
-            
-            if (DestinationConnectionId > 0)
-                DCIL_SCIL = (byte)(DCIL_SCIL | 0x50);
-            if (SourceConnectionId > 0)
-                DCIL_SCIL = (byte)(DCIL_SCIL | 0x05);
 
-            result.Add(DCIL_SCIL);
-
-            if (DestinationConnectionId > 0)
+            result.Add(DCID);
+            if (DCID > 0)
                 result.Add(DestinationConnectionId);
-            if (SourceConnectionId > 0)
+            result.Add(SCID);
+            if (SCID > 0)
                 result.Add(SourceConnectionId);
 
             byte[] tokenLength = new VariableInteger(0);
-            byte[] length = new VariableInteger(4 + (UInt64)frames.Length);
+            byte[] length = new VariableInteger(PacketNumber.Size + (UInt64)frames.Length);
 
             result.AddRange(tokenLength);
             result.AddRange(length);
-            result.AddRange(ByteUtilities.GetBytes(PacketNumber));
+            byte[] packetNumber = PacketNumber;
+            result.AddRange(packetNumber);
             result.AddRange(frames);
 
             return result.ToArray();

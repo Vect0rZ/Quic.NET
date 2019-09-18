@@ -48,8 +48,10 @@ namespace QuicNet.Infrastructure.Packets
             result.Add(EncodeTypeField());
             result.AddRange(ByteUtilities.GetBytes(Version));
 
+            result.Add(DCID);
             if (DCID > 0)
                 result.Add(DestinationConnectionId);
+            result.Add(SCID);
             if (SCID > 0)
                 result.Add(SourceConnectionId);
 
