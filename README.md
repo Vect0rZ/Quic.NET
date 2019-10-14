@@ -1,5 +1,5 @@
 # Update 08.18.2019
-I might not be obvious, but the library is still in development!
+It might not be obvious, but the library is still in development!
 
 The reason for the lack of updates are two:
   1. **Rapid** RFC changes;
