@@ -34,6 +34,7 @@ namespace QuickNet.Tests.ConsoleServer
                     Console.WriteLine("Data received: " + Encoding.UTF8.GetString(data));
 
                     c.Send(Encoding.UTF8.GetBytes("Echo!"));
+                    c.Send(Encoding.UTF8.GetBytes("Echo2!"));
                 };
             }
         }
@@ -41,6 +42,7 @@ namespace QuickNet.Tests.ConsoleServer
         static void Main(string[] args)
         {
             Example();
+            return;
 
             byte[] bytes = new VariableInteger(12345);
             VariableInteger integer = bytes;

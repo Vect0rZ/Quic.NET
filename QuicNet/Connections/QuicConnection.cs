@@ -1,6 +1,7 @@
 ﻿using QuickNet.Utilities;
 using QuicNet.Context;
 using QuicNet.Exceptions;
+using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.PacketProcessing;
 using QuicNet.Infrastructure.Packets;
@@ -20,6 +21,7 @@ namespace QuicNet.Connections
         private ConnectionState _state;
         private string _lastError;
         private Dictionary<UInt64, QuicStream> _streams;
+        private NumberSpace _ns = new NumberSpace();
 
         private PacketWireTransfer _pwt;
 
@@ -39,11 +41,12 @@ namespace QuicNet.Connections
         /// <returns>A new stream instance or Null if the connection is terminated.</returns>
         public QuicStream CreateStream(StreamType type)
         {
+            UInt32 streamId = _ns.Get();
             if (_state != ConnectionState.Open)
                 return null;
 
-            QuicStream stream = new QuicStream(this, new QuickNet.Utilities.StreamId(0, type));
-            _streams.Add(0, stream);
+            QuicStream stream = new QuicStream(this, new QuickNet.Utilities.StreamId(streamId, type));
+            _streams.Add(streamId, stream);
 
             return stream;
         }
@@ -114,13 +117,13 @@ namespace QuicNet.Connections
                 stream.ProcessData(sf);
 
                 if ((UInt64)_streams.Count < MaxStreams)
-                    _streams.Add(sf.StreamId.Value, stream);
+                    _streams.Add(sf.ConvertedStreamId.Id, stream);
                 else
                     SendMaximumStreamReachedError();
             }
             else
             {
-                QuicStream stream = _streams[sf.StreamId];
+                QuicStream stream = _streams[sf.ConvertedStreamId.Id];
                 stream.ProcessData(sf);
             }
         }

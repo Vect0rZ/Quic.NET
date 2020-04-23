@@ -24,7 +24,21 @@ namespace QuicNet.Tests.ConsoleClient
 
             Console.WriteLine("Send 'Hello From Client!'");
             stream.Send(Encoding.UTF8.GetBytes("Hello from Client!"));        // Send Data
+
+            stream = connection.CreateStream(QuickNet.Utilities.StreamType.ClientBidirectional); // Create a data stream
+            stream.Send(Encoding.UTF8.GetBytes("Hello from Client2!"));
+
             Console.WriteLine("Waiting for message from the server");
+            try
+            {
+                byte[] data = stream.Receive();                                   // Receive from server
+                Console.WriteLine("Received: " + Encoding.UTF8.GetString(data));
+            }
+            catch (Exception e)
+            {
+                Console.WriteLine(e.Message);
+            }
+
             try
             {
                 byte[] data = stream.Receive();                                   // Receive from server
