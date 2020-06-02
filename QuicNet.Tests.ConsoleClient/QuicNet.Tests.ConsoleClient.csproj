@@ -49,9 +49,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\QuickNet.Utilities\QuickNet.Utilities.csproj">
-      <Project>{5e344c85-825e-470b-9998-cf9425cb8b8e}</Project>
-      <Name>QuickNet.Utilities</Name>
+    <ProjectReference Include="..\QuickNet.Utilities\QuicNet.Utilities.csproj">
+      <Project>{69a23c4b-b675-4e1e-a4b4-ef8740c30c07}</Project>
+      <Name>QuicNet.Utilities</Name>
     </ProjectReference>
     <ProjectReference Include="..\QuicNet.Infrastructure\QuicNet.Infrastructure.csproj">
       <Project>{8159f64b-7511-4dff-8998-efb029334a56}</Project>
