@@ -10,6 +10,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
 
 namespace QuickNet.Tests.ConsoleServer
@@ -39,9 +40,33 @@ namespace QuickNet.Tests.ConsoleServer
             }
         }
 
-        static void Main(string[] args)
+        static async Task ExampleAsync()
         {
-            Example();
+            QuicListener listener = new QuicListener(11000);
+            listener.Start();
+
+            while (true)
+            {
+                // Blocks while waiting for a connection
+                QuicConnection client = await listener.AcceptQuicClientAsync();
+
+                // Assign an action when a data is received from that client.
+                client.OnDataReceived += async (c) => {
+
+                    byte[] data = c.Data;
+
+                    Console.WriteLine("Data received: " + Encoding.UTF8.GetString(data));
+
+                    await c.SendAsync(Encoding.UTF8.GetBytes("Echo!"));
+                    await c.SendAsync(Encoding.UTF8.GetBytes("Echo2!"));
+                };
+            }
+        }
+
+        static async Task Main(string[] args)
+        {
+            //Example();
+            await ExampleAsync();
             return;
 
             byte[] bytes = new VariableInteger(12345);
