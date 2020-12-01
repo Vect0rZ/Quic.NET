@@ -34,12 +34,12 @@ namespace QuicNet.Infrastructure.PacketProcessing
             return packet;
         }
 
-        public ShortHeaderPacket CreateDataPacket(UInt64 streamId, byte[] data)
+        public ShortHeaderPacket CreateDataPacket(UInt64 streamId, byte[] data, UInt64 offset)
         {
             ShortHeaderPacket packet = new ShortHeaderPacket();
             packet.PacketNumber = _ns.Get();
             packet.DestinationConnectionId = (byte)_peerConnectionId;
-            packet.AttachFrame(new StreamFrame(streamId, data, 0, true));
+            packet.AttachFrame(new StreamFrame(streamId, data, offset, true));
 
             return packet;
         }

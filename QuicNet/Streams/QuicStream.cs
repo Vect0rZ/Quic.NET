@@ -21,6 +21,7 @@ namespace QuicNet.Streams
         private QuicConnection _connection;
         private UInt64 _maximumStreamData;
         private UInt64 _currentTransferRate;
+        private UInt64 _sendOffset;
 
         public StreamState State { get; set; }
         public StreamType Type { get; set; }
@@ -41,6 +42,7 @@ namespace QuicNet.Streams
 
             _maximumStreamData = QuicSettings.MaxStreamData;
             _currentTransferRate = 0;
+            _sendOffset = 0;
 
             _connection = connection;
         }
@@ -52,9 +54,11 @@ namespace QuicNet.Streams
 
             _connection.IncrementRate(data.Length);
 
-            ShortHeaderPacket packet = _connection.PacketCreator.CreateDataPacket(this.StreamId.IntegerValue, data);
+            ShortHeaderPacket packet = _connection.PacketCreator.CreateDataPacket(this.StreamId.IntegerValue, data, _sendOffset);
             if (_connection.MaximumReached())
                 packet.AttachFrame(new StreamDataBlockedFrame(StreamId.IntegerValue, (UInt64)data.Length));
+
+            _sendOffset += (UInt64)data.Length;
 
             return _connection.SendData(packet);
         }
