@@ -13,12 +13,15 @@ namespace QuicNet.Infrastructure.Frames
 
         public override void Decode(ByteArray array)
         {
-            throw new NotImplementedException();
+            byte type = array.ReadByte();
         }
 
         public override byte[] Encode()
         {
-            throw new NotImplementedException();
+            List<byte> data = new List<byte>();
+            data.Add(Type);
+
+            return data.ToArray();
         }
     }
 }
