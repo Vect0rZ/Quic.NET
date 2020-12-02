@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Net.Sockets;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -91,6 +92,32 @@ namespace QuicNet
         }
 
         /// <summary>
+        /// Blocks and waits for incomming connection. Does NOT block additional incomming packets.
+        /// </summary>
+        /// <returns>Returns an instance of QuicConnection.</returns>
+        public async Task<QuicConnection> AcceptQuicClientAsync()
+        {
+            if (!_started)
+                throw new QuicListenerNotStartedException("Please call the Start() method before receving data.");
+
+            /*
+             * Wait until there is initial packet incomming.
+             * Otherwise we still need to orchestrate any other protocol or data pakcets.
+             * */
+            while (true)
+            {
+                Packet packet = await _pwt.ReadPacketAsync();
+                if (packet is InitialPacket)
+                {
+                    QuicConnection connection = await ProcessInitialPacketAsync(packet, _pwt.LastTransferEndpoint());
+                    return connection;
+                }
+
+                OrchestratePacket(packet);
+            }
+        }
+
+        /// <summary>
         /// Starts receiving data from clients.
         /// </summary>
         private void Receive()
@@ -98,6 +125,24 @@ namespace QuicNet
             while (true)
             {
                 Packet packet = _pwt.ReadPacket();
+
+                // Discard unknown packets
+                if (packet == null)
+                    continue;
+
+                // TODO: Validate packet before dispatching
+                OrchestratePacket(packet);
+            }
+        }
+
+        /// <summary>
+        /// Starts receiving data from clients.
+        /// </summary>
+        private async Task ReceiveAsync()
+        {
+            while (true)
+            {
+                Packet packet = await _pwt.ReadPacketAsync();
 
                 // Discard unknown packets
                 if (packet == null)
@@ -170,6 +215,62 @@ namespace QuicNet
 
             data = ip.Encode();
             int dataSent = _client.Send(data, data.Length, endPoint);
+            if (dataSent > 0)
+                return result;
+
+            return null;
+        }
+
+        /// <summary>
+        /// Processes incomming initial packet and creates or halts a connection.
+        /// </summary>
+        /// <param name="packet">Initial Packet</param>
+        /// <param name="endPoint">Peer's endpoint</param>
+        /// <returns></returns>
+        private async Task<QuicConnection> ProcessInitialPacketAsync(Packet packet, IPEndPoint endPoint)
+        {
+            QuicConnection result = null;
+            UInt32 availableConnectionId;
+            byte[] data;
+            // Unsupported version. Version negotiation packet is sent only on initial connection. All other packets are dropped. (5.2.2 / 16th draft)
+            if (packet.Version != QuicVersion.CurrentVersion || !QuicVersion.SupportedVersions.Contains(packet.Version))
+            {
+                VersionNegotiationPacket vnp = _packetCreator.CreateVersionNegotiationPacket();
+                data = vnp.Encode();
+
+                await _client.SendAsync(data, data.Length, endPoint);
+                return null;
+            }
+
+            InitialPacket cast = packet as InitialPacket;
+            InitialPacket ip = _packetCreator.CreateInitialPacket(0, cast.SourceConnectionId);
+
+            // Protocol violation if the initial packet is smaller than the PMTU. (pt. 14 / 16th draft)
+            if (cast.Encode().Length < QuicSettings.PMTU)
+            {
+                ip.AttachFrame(new ConnectionCloseFrame(ErrorCode.PROTOCOL_VIOLATION, "PMTU have not been reached."));
+            }
+            else if (ConnectionPool.AddConnection(new ConnectionData(_pwt, cast.SourceConnectionId, 0), out availableConnectionId) == true)
+            {
+                // Tell the peer the available connection id
+                ip.SourceConnectionId = (byte)availableConnectionId;
+
+                // We're including the maximum possible stream id during the connection handshake. (4.5 / 16th draft)
+                ip.AttachFrame(new MaxStreamsFrame(QuicSettings.MaximumStreamId, StreamType.ServerBidirectional));
+
+                // Set the return result
+                result = ConnectionPool.Find(availableConnectionId);
+            }
+            else
+            {
+                // Not accepting connections. Send initial packet with CONNECTION_CLOSE frame.
+                // TODO: Buffering. The server might buffer incomming 0-RTT packets in anticipation of late delivery InitialPacket.
+                // Maximum buffer size should be set in QuicSettings.
+                ip.AttachFrame(new ConnectionCloseFrame(ErrorCode.SERVER_BUSY, "The server is too busy to process your request."));
+            }
+
+            data = ip.Encode();
+            int dataSent = await _client.SendAsync(data, data.Length, endPoint);
             if (dataSent > 0)
                 return result;
 

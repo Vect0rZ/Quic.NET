@@ -37,6 +37,20 @@ namespace QuicNet.InternalInfrastructure
             return packet;
         }
 
+        public async Task<Packet> ReadPacketAsync()
+        {
+            // Await response for sucessfull connection creation by the server
+            var udpReceiveResult = await _client.ReceiveAsync();
+            _peerEndpoint = udpReceiveResult.RemoteEndPoint;
+            byte[] peerData = udpReceiveResult.Buffer;
+            if (peerData == null)
+                throw new QuicConnectivityException("Server did not respond properly.");
+
+            Packet packet = _unpacker.Unpack(peerData);
+
+            return packet;
+        }
+
         public bool SendPacket(Packet packet)
         {
             byte[] data = packet.Encode();
@@ -44,6 +58,15 @@ namespace QuicNet.InternalInfrastructure
             int sent = _client.Send(data, data.Length, _peerEndpoint);
 
             return sent > 0;
+        }
+
+        public async Task<bool> SendPacketAsync(Packet packet)
+        {
+            byte[] data = packet.Encode();
+
+            var sent = _client.SendAsync(data, data.Length, _peerEndpoint);
+
+            return await sent > 0;
         }
 
         public IPEndPoint LastTransferEndpoint()

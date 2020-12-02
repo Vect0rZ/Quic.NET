@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Threading.Tasks;
 
 namespace QuicNet.Streams
 {
@@ -63,6 +64,20 @@ namespace QuicNet.Streams
             return _connection.SendData(packet);
         }
 
+        public async Task<bool> SendAsync(byte[] data)
+        {
+            if (Type == StreamType.ServerUnidirectional)
+                throw new StreamException("Cannot send data on unidirectional stream.");
+
+            _connection.IncrementRate(data.Length);
+
+            ShortHeaderPacket packet = _connection.PacketCreator.CreateDataPacket(this.StreamId.IntegerValue, data);
+            if (_connection.MaximumReached())
+                packet.AttachFrame(new StreamDataBlockedFrame(StreamId.IntegerValue, (UInt64)data.Length));
+
+            return await _connection.SendDataAsync(packet);
+        }
+
         /// <summary>
         /// Client only!
         /// </summary>
@@ -75,6 +90,23 @@ namespace QuicNet.Streams
             while (!IsStreamFull() || State == StreamState.Recv)
             {
                 _connection.ReceivePacket();
+            }
+
+            return Data;
+        }
+
+        /// <summary>
+        /// Client async only!
+        /// </summary>
+        /// <returns></returns>
+        public async Task<byte[]> ReceiveAsync()
+        {
+            if (Type == StreamType.ClientUnidirectional)
+                throw new StreamException("Cannot receive data on unidirectional stream.");
+
+            while (!IsStreamFull() || State == StreamState.Recv)
+            {
+                await _connection.ReceivePacketAsync();
             }
 
             return Data;
@@ -133,6 +165,48 @@ namespace QuicNet.Streams
             {
                 ShortHeaderPacket errorPacket = _connection.PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, "Maximum stream data transfer reached.");
                 _connection.SendData(errorPacket);
+                _connection.TerminateConnection();
+
+                return;
+            }
+
+            if (State == StreamState.SizeKnown && IsStreamFull())
+            {
+                _connection.DataReceived(this);
+
+                State = StreamState.DataRecvd;
+            }
+        }
+
+        public async Task ProcessDataAsync(StreamFrame frame)
+        {
+            // Do not accept data if the stream is reset.
+            if (State == StreamState.ResetRecvd)
+                return;
+
+            byte[] data = frame.StreamData;
+            if (frame.Offset != null)
+            {
+                _data.Add(frame.Offset.Value, frame.StreamData);
+            }
+            else
+            {
+                // TODO: Careful with duplicate 0 offset packets on the same stream. Probably PROTOCOL_VIOLATION?
+                _data.Add(0, frame.StreamData);
+            }
+
+            // Either this frame marks the end of the stream,
+            // or fin frame came before the data frames
+            if (frame.EndOfStream)
+                State = StreamState.SizeKnown;
+
+            _currentTransferRate += (UInt64)data.Length;
+
+            // Terminate connection if maximum stream data is reached
+            if (_currentTransferRate >= _maximumStreamData)
+            {
+                ShortHeaderPacket errorPacket = _connection.PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, "Maximum stream data transfer reached.");
+                await _connection.SendDataAsync(errorPacket);
                 _connection.TerminateConnection();
 
                 return;

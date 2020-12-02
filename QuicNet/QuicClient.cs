@@ -72,6 +72,35 @@ namespace QuicNet
         }
 
         /// <summary>
+        /// Connect to a remote server.
+        /// </summary>
+        /// <param name="ip">Ip Address</param>
+        /// <param name="port">Port</param>
+        /// <returns></returns>
+        public async Task<QuicConnection> ConnectAsync(string ip, int port)
+        {
+            // Establish socket connection
+            _peerIp = new IPEndPoint(IPAddress.Parse(ip), port);
+
+            // Initialize packet reader
+            _pwt = new PacketWireTransfer(_client, _peerIp);
+
+            // Start initial protocol process
+            InitialPacket connectionPacket = _packetCreator.CreateInitialPacket(0, 0);
+
+            // Send the initial packet
+            await _pwt.SendPacketAsync(connectionPacket);
+
+            // Await response for sucessfull connection creation by the server
+            InitialPacket packet = (InitialPacket)await _pwt.ReadPacketAsync();
+
+            HandleInitialFrames(packet);
+            EstablishConnection(packet.SourceConnectionId, packet.SourceConnectionId);
+
+            return _connection;
+        }
+
+        /// <summary>
         /// Handles initial packet's frames. (In most cases protocol frames)
         /// </summary>
         /// <param name="packet"></param>

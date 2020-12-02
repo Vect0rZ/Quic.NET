@@ -12,6 +12,8 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace QuicNet.Connections
 {
@@ -74,6 +76,41 @@ namespace QuicNet.Connections
             }
         }
 
+        public async Task ProcessFramesAsync(List<Frame> frames)
+        {
+            foreach (Frame frame in frames)
+            {
+                switch (frame.Type)
+                {
+                    case 0x01:
+                    case 0x04:
+                        OnRstStreamFrame(frame);
+                        break;
+                    case byte type when type >= 0x08 && frame.Type <= 0x0f:
+                        await OnStreamFrameAsync(frame);
+                        break;
+                    case 0x10:
+                        OnMaxDataFrame(frame);
+                        break;
+                    case 0x11:
+                        OnMaxStreamDataFrame(frame);
+                        break;
+                    case 0x12:
+                    case 0x13:
+                        OnMaxStreamFrame(frame);
+                        break;
+                    case 0x14:
+                        OnDataBlockedFrame(frame);
+                        break;
+                    case 0x1c:
+                        OnConnectionCloseFrame(frame);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+
         public void IncrementRate(int length)
         {
             _currentTransferRate += (UInt32)length;
@@ -128,6 +165,26 @@ namespace QuicNet.Connections
             }
         }
 
+        private async Task OnStreamFrameAsync(Frame frame)
+        {
+            StreamFrame sf = (StreamFrame)frame;
+            if (_streams.ContainsKey(sf.ConvertedStreamId.Id) == false)
+            {
+                QuicStream stream = new QuicStream(this, sf.ConvertedStreamId);
+                await stream.ProcessDataAsync(sf);
+
+                if ((UInt64)_streams.Count < MaxStreams)
+                    _streams.Add(sf.ConvertedStreamId.Id, stream);
+                else
+                    SendMaximumStreamReachedError();
+            }
+            else
+            {
+                QuicStream stream = _streams[sf.ConvertedStreamId.Id];
+                await stream.ProcessDataAsync(sf);
+            }
+        }
+
         private void OnMaxDataFrame(Frame frame)
         {
             MaxDataFrame sf = (MaxDataFrame)frame;
@@ -177,7 +234,7 @@ namespace QuicNet.Connections
         }
 
         #region Internal
-  
+
         internal QuicConnection(ConnectionData connection)
         {
             _currentTransferRate = 0;
@@ -221,9 +278,41 @@ namespace QuicNet.Connections
 
         }
 
+        /// <summary>
+        /// Client async only!
+        /// </summary>
+        /// <returns></returns>
+        internal async Task ReceivePacketAsync()
+        {
+            Packet packet = await _pwt.ReadPacketAsync();
+
+            if (packet is ShortHeaderPacket)
+            {
+                ShortHeaderPacket shp = (ShortHeaderPacket)packet;
+                await ProcessFramesAsync(shp.GetFrames());
+            }
+
+            // If the connection has been closed
+            if (_state == ConnectionState.Draining)
+            {
+                if (string.IsNullOrWhiteSpace(_lastError))
+                    _lastError = "Protocol error";
+
+                TerminateConnection();
+
+                throw new QuicConnectivityException(_lastError);
+            }
+
+        }
+
         internal bool SendData(Packet packet)
         {
             return _pwt.SendPacket(packet);
+        }
+
+        internal async Task<bool> SendDataAsync(Packet packet)
+        {
+            return await _pwt.SendPacketAsync(packet);
         }
 
         internal void DataReceived(QuicStream context)
