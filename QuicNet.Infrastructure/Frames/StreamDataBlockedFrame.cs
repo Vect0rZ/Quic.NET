@@ -11,9 +11,7 @@ namespace QuicNet.Infrastructure.Frames
     {
         public override byte Type => 0x15;
         public VariableInteger StreamId { get; set; }
-        public VariableInteger StreamDataLimit { get; set; }
-
-        public StreamId ConvertedStreamId { get; set; }
+        public VariableInteger MaximumStreamData { get; set; }
 
         public StreamDataBlockedFrame()
         {
@@ -23,26 +21,23 @@ namespace QuicNet.Infrastructure.Frames
         public StreamDataBlockedFrame(UInt64 streamId, UInt64 streamDataLimit)
         {
             StreamId = streamId;
-            StreamDataLimit = streamDataLimit;
+            MaximumStreamData = streamDataLimit;
         }
 
         public override void Decode(ByteArray array)
         {
             byte type = array.ReadByte();
             StreamId = array.ReadVariableInteger();
-            StreamDataLimit = array.ReadVariableInteger();
+            MaximumStreamData = array.ReadVariableInteger();
         }
 
         public override byte[] Encode()
         {
             List<byte> result = new List<byte>();
+
             result.Add(Type);
-
-            byte[] streamId = StreamId;
-            byte[] streamDataLimit = StreamDataLimit;
-
-            result.AddRange(streamId);
-            result.AddRange(streamDataLimit);
+            result.AddRange(StreamId.ToByteArray());
+            result.AddRange(MaximumStreamData.ToByteArray());
 
             return result.ToArray();
         }

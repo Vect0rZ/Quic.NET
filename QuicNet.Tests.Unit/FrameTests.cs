@@ -12,7 +12,7 @@ namespace QuicNet.Tests.Unit
     {
         [TestMethod]
         public void ConnectionCloseFrameTest()
-      {
+        {
             var ccf = new ConnectionCloseFrame(ErrorCode.PROTOCOL_VIOLATION, 0x00, ErrorConstants.PMTUNotReached);
             byte[] data = ccf.Encode();
 

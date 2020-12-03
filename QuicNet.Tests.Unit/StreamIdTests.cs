@@ -58,5 +58,17 @@ namespace QuicNet.Tests.Unit
             Assert.AreEqual(data[6], 1);
             Assert.AreEqual(data[7], 239);
         }
+
+        [TestMethod]
+        public void VariableIntegerTest()
+        {
+            StreamId id = new StreamId(123, StreamType.ClientBidirectional);
+
+            VariableInteger integer = id;
+
+            StreamId converted = integer;
+
+            Assert.AreEqual(id.Id, converted.Id);
+        }
     }
 }
