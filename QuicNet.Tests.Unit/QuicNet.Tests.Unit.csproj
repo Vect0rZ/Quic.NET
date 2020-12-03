@@ -51,6 +51,7 @@
     <Compile Include="ByteArrayTests.cs" />
     <Compile Include="StreamIdTests.cs" />
     <Compile Include="GranularIntegerTests.cs" />
+    <Compile Include="FrameTests.cs" />
     <Compile Include="VariableIntegerTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

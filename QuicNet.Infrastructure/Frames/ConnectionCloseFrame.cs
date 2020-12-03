@@ -9,8 +9,10 @@ namespace QuicNet.Infrastructure.Frames
 {
     public class ConnectionCloseFrame : Frame
     {
+        public byte ActualType { get; set; }
         public override byte Type => 0x1c;
-        public UInt16 ErrorCode { get; set; }
+        public VariableInteger ErrorCode { get; set; }
+        public VariableInteger FrameType { get; set; }
         public VariableInteger ReasonPhraseLength { get; set; }
         public string ReasonPhrase { get; set; }
 
@@ -20,19 +22,36 @@ namespace QuicNet.Infrastructure.Frames
             ReasonPhraseLength = new VariableInteger(0);
         }
 
-        public ConnectionCloseFrame(ErrorCode error, string reason)
+        /// <summary>
+        /// 0x1d not yet supported (Application Protocol Error)
+        /// </summary>
+        public ConnectionCloseFrame(ErrorCode error, byte frameType, string reason)
         {
-            ReasonPhraseLength = new VariableInteger(0);
+            ActualType = 0x1c;
 
-            ErrorCode = (UInt16)error;
+            ErrorCode = (UInt64)error;
+            FrameType = new VariableInteger((UInt64)frameType);
+            if (!string.IsNullOrWhiteSpace(reason))
+            {
+                ReasonPhraseLength = new VariableInteger((UInt64)reason.Length);
+            }
+            else
+            {
+                ReasonPhraseLength = new VariableInteger(0);
+            }
+
             ReasonPhrase = reason;
         }
 
         public override void Decode(ByteArray array)
         {
-            byte type = array.ReadByte();
+            ActualType = array.ReadByte();
+            ErrorCode = array.ReadVariableInteger();
+            if (ActualType == 0x1c)
+            {
+                FrameType = array.ReadVariableInteger();
+            }
 
-            ErrorCode = array.ReadUInt16();
             ReasonPhraseLength = array.ReadVariableInteger();
 
             byte[] rp = array.ReadBytes((int)ReasonPhraseLength.Value);
@@ -42,16 +61,19 @@ namespace QuicNet.Infrastructure.Frames
         public override byte[] Encode()
         {
             List<byte> result = new List<byte>();
-            result.Add(Type);
-
-            byte[] errorCode = ByteUtilities.GetBytes(ErrorCode);
-            result.AddRange(errorCode);
+            result.Add(ActualType);
+            result.AddRange(ErrorCode.ToByteArray());
+            if (ActualType == 0x1c)
+            {
+                result.AddRange(FrameType.ToByteArray());
+            }
 
             if (string.IsNullOrWhiteSpace(ReasonPhrase) == false)
             {
-                byte[] reasonPhrase = ByteUtilities.GetBytes(ReasonPhrase);
                 byte[] rpl = new VariableInteger((UInt64)ReasonPhrase.Length);
                 result.AddRange(rpl);
+
+                byte[] reasonPhrase = ByteUtilities.GetBytes(ReasonPhrase);
                 result.AddRange(reasonPhrase);
             }
 

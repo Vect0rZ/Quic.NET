@@ -1,5 +1,6 @@
 ﻿using QuickNet.Utilities;
 using QuicNet.Connections;
+using QuicNet.Constants;
 using QuicNet.Context;
 using QuicNet.Exceptions;
 using QuicNet.Infrastructure;
@@ -147,7 +148,7 @@ namespace QuicNet
             // Protocol violation if the initial packet is smaller than the PMTU. (pt. 14 / 16th draft)
             if (cast.Encode().Length < QuicSettings.PMTU)
             {
-                ip.AttachFrame(new ConnectionCloseFrame(ErrorCode.PROTOCOL_VIOLATION, "PMTU have not been reached."));
+                ip.AttachFrame(new ConnectionCloseFrame(ErrorCode.PROTOCOL_VIOLATION, 0x00, ErrorConstants.PMTUNotReached));
             }
             else if (ConnectionPool.AddConnection(new ConnectionData(_pwt, cast.SourceConnectionId, 0), out availableConnectionId) == true)
             {
@@ -165,7 +166,7 @@ namespace QuicNet
                 // Not accepting connections. Send initial packet with CONNECTION_CLOSE frame.
                 // TODO: Buffering. The server might buffer incomming 0-RTT packets in anticipation of late delivery InitialPacket.
                 // Maximum buffer size should be set in QuicSettings.
-                ip.AttachFrame(new ConnectionCloseFrame(ErrorCode.SERVER_BUSY, "The server is too busy to process your request."));
+                ip.AttachFrame(new ConnectionCloseFrame(ErrorCode.CONNECTION_REFUSED, 0x00, ErrorConstants.ServerTooBusy));
             }
 
             data = ip.Encode();
