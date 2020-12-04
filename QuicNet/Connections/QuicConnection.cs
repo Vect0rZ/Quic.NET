@@ -70,7 +70,7 @@ namespace QuicNet.Connections
                     OnMaxStreamFrame(frame);
                 if (frame.Type == 0x14)
                     OnDataBlockedFrame(frame);
-                if (frame.Type == 0x1c || frame.Type == 0x1d)
+                if (frame.Type >= 0x1c && frame.Type <= 0x1d)
                     OnConnectionCloseFrame(frame);
             }
         }
@@ -112,19 +112,21 @@ namespace QuicNet.Connections
         private void OnStreamFrame(Frame frame)
         {
             StreamFrame sf = (StreamFrame)frame;
-            if (_streams.ContainsKey(sf.ConvertedStreamId.Id) == false)
+            StreamId streamId = sf.StreamId;
+
+            if (_streams.ContainsKey(streamId.Id) == false)
             {
-                QuicStream stream = new QuicStream(this, sf.ConvertedStreamId);
+                QuicStream stream = new QuicStream(this, streamId);
                 stream.ProcessData(sf);
 
                 if ((UInt64)_streams.Count < MaxStreams)
-                    _streams.Add(sf.ConvertedStreamId.Id, stream);
+                    _streams.Add(streamId.Id, stream);
                 else
                     SendMaximumStreamReachedError();
             }
             else
             {
-                QuicStream stream = _streams[sf.ConvertedStreamId.Id];
+                QuicStream stream = _streams[streamId.Id];
                 stream.ProcessData(sf);
             }
         }
@@ -166,15 +168,16 @@ namespace QuicNet.Connections
         private void OnStreamDataBlockedFrame(Frame frame)
         {
             StreamDataBlockedFrame sdbf = (StreamDataBlockedFrame)frame;
+            StreamId streamId = sdbf.StreamId;
 
-            if (_streams.ContainsKey(sdbf.ConvertedStreamId.Id) == false)
+            if (_streams.ContainsKey(streamId.Id) == false)
                 return;
-            QuicStream stream = _streams[sdbf.ConvertedStreamId.Id];
+            QuicStream stream = _streams[streamId.Id];
 
             stream.ProcessStreamDataBlocked(sdbf);
 
             // Remove the stream from the connection
-            _streams.Remove(sdbf.ConvertedStreamId.Id);
+            _streams.Remove(streamId.Id);
         }
 
         #region Internal

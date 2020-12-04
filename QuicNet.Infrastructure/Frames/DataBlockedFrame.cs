@@ -10,7 +10,7 @@ namespace QuicNet.Infrastructure.Frames
     public class DataBlockedFrame : Frame
     {
         public override byte Type => 0x14;
-        public VariableInteger DataLimit { get; set; }
+        public VariableInteger MaximumData { get; set; }
 
         public DataBlockedFrame()
         {
@@ -19,22 +19,20 @@ namespace QuicNet.Infrastructure.Frames
 
         public DataBlockedFrame(UInt64 dataLimit)
         {
-            DataLimit = dataLimit;
+            MaximumData = dataLimit;
         }
 
         public override void Decode(ByteArray array)
         {
             byte type = array.ReadByte();
-            DataLimit = array.ReadVariableInteger();
+            MaximumData = array.ReadVariableInteger();
         }
 
         public override byte[] Encode()
         {
             List<byte> result = new List<byte>();
             result.Add(Type);
-            byte[] dataLimit = DataLimit;
-
-            result.AddRange(dataLimit);
+            result.AddRange(MaximumData.ToByteArray());
 
             return result.ToArray();
         }

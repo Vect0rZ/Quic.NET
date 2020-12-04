@@ -42,6 +42,11 @@ namespace QuickNet.Utilities
             return streamId.Id;
         }
 
+        public static implicit operator StreamId(VariableInteger integer)
+        {
+            return Decode(ByteUtilities.GetBytes(integer.Value));
+        }
+
         public static byte[] Encode(UInt64 id, StreamType type)
         {
             UInt64 identifier = id << 2 | (UInt64)type;
