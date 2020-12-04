@@ -19,6 +19,11 @@ namespace QuickNet.Utilities
             _integer = integer;
         }
 
+        public byte[] ToByteArray()
+        {
+            return Encode(this._integer);
+        }
+
         public static implicit operator byte[] (GranularInteger integer)
         {
             return Encode(integer._integer);

@@ -80,6 +80,14 @@ namespace QuickNet.Utilities
             return bytes;
         }
 
+        public GranularInteger ReadGranularInteger(int size)
+        {
+            byte[] data = ReadBytes(size);
+            GranularInteger result = data;
+
+            return result;
+        }
+
         public StreamId ReadStreamId()
         {
             byte[] streamId = ReadBytes(8);
