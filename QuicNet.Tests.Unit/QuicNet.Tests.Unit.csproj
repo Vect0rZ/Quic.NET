@@ -49,6 +49,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ByteArrayTests.cs" />
+    <Compile Include="PacketTests.cs" />
     <Compile Include="StreamIdTests.cs" />
     <Compile Include="GranularIntegerTests.cs" />
     <Compile Include="FrameTests.cs" />

@@ -7,7 +7,9 @@ namespace QuicNet.Infrastructure.Packets
 {
     public class ShortHeaderPacket : Packet
     {
-        public override byte Type => 0x40; // 0100 0000;
+        public byte ActualType = 0b01000000;
+        public override byte Type => 0b01000000;
+
         public byte DestinationConnectionId { get; set; }
         public GranularInteger PacketNumber { get; set; }
 
@@ -26,7 +28,7 @@ namespace QuicNet.Infrastructure.Packets
         public override byte[] Encode()
         {
             byte[] frames = EncodeFrames();
-           
+
             List<byte> result = new List<byte>();
             result.Add((byte)(Type | (PacketNumber.Size - 1)));
             result.Add(DestinationConnectionId);
