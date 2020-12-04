@@ -45,6 +45,11 @@ namespace QuickNet.Utilities
             return result;
         }
 
+        public byte[] ToByteArray()
+        {
+            return Encode(this._integer);
+        }
+
         public static byte[] Encode(UInt64 integer)
         {
             int requiredBytes = 0;
