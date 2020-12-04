@@ -1,4 +1,5 @@
-﻿using System;
+﻿using QuickNet.Utilities;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Net;
@@ -11,10 +12,10 @@ namespace QuicNet.InternalInfrastructure
     internal class ConnectionData
     {
         public PacketWireTransfer PWT { get; set; }
-        public UInt32 ConnectionId { get; set; }
-        public UInt32 PeerConnectionId { get; set; }
+        public GranularInteger ConnectionId { get; set; }
+        public GranularInteger PeerConnectionId { get; set; }
 
-        public ConnectionData(PacketWireTransfer pwt, UInt32 connectionId, UInt32 peerConnnectionId)
+        public ConnectionData(PacketWireTransfer pwt, GranularInteger connectionId, GranularInteger peerConnnectionId)
         {
             PWT = pwt;
             ConnectionId = connectionId;

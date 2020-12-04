@@ -51,6 +51,11 @@ namespace QuickNet.Utilities
             return bytes;
         }
 
+        public byte[] ReadBytes(VariableInteger count)
+        {
+            return ReadBytes(count.Value);
+        }
+
         public UInt16 ReadUInt16()
         {
             byte[] bytes = ReadBytes(2);

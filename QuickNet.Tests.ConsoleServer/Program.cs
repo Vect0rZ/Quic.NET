@@ -49,7 +49,7 @@ namespace QuickNet.Tests.ConsoleServer
             UInt64 uinteger = integer;
             int size = VariableInteger.Size(bytes[0]);
 
-            InitialPacket packet = new InitialPacket()
+            InitialPacket packet = new InitialPacket(0, 0)
             {
                 Version = 16,
                 SourceConnectionId = 124,
@@ -71,7 +71,7 @@ namespace QuickNet.Tests.ConsoleServer
             byte[] shpdata1 = new byte[] { 1, 1, 2, 3, 5, 8 };
             byte[] shpdata2 = new byte[] { 13, 21, 34, 55, 89, 144 };
 
-            ShortHeaderPacket shp = new ShortHeaderPacket();
+            ShortHeaderPacket shp = new ShortHeaderPacket(0);
             shp.DestinationConnectionId = 124;
             shp.PacketNumber = 2;
 

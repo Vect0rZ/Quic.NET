@@ -7,12 +7,12 @@ namespace QuicNet.Infrastructure.Packets
 {
     public class InitialPacket : Packet
     {
-        public override byte Type => 0xDC; // 1101 1100
+        public override byte Type => 0b1100_1100 ; //0xDC; // 1101 1100
         
-        public byte DCID { get; set; }
-        public byte DestinationConnectionId { get; set; }
-        public byte SCID { get; set; }
-        public byte SourceConnectionId { get; set; }
+        public byte DestinationConnectionIdLength { get; set; }
+        public GranularInteger DestinationConnectionId { get; set; }
+        public byte SourceConnectionIdLength { get; set; }
+        public GranularInteger SourceConnectionId { get; set; }
         public VariableInteger TokenLength { get; set; }
         public byte[] Token { get; set; }
         public VariableInteger Length { get; set; }
@@ -20,7 +20,16 @@ namespace QuicNet.Infrastructure.Packets
 
         public InitialPacket()
         {
-            DCID = SCID = 1;
+
+        }
+
+        public InitialPacket(GranularInteger destinationConnectionId, GranularInteger sourceConnectionId)
+        {
+            DestinationConnectionIdLength = destinationConnectionId.Size;
+            DestinationConnectionId = destinationConnectionId;
+
+            SourceConnectionIdLength = sourceConnectionId.Size;
+            SourceConnectionId = sourceConnectionId;
         }
 
         public override void Decode(byte[] packet)
@@ -32,20 +41,20 @@ namespace QuicNet.Infrastructure.Packets
 
             Version = array.ReadUInt32();
 
-            DCID = array.ReadByte();
-            if (DCID > 0)
-                DestinationConnectionId = array.ReadByte();
+            DestinationConnectionIdLength = array.ReadByte();
+            if (DestinationConnectionIdLength > 0)
+                DestinationConnectionId = array.ReadGranularInteger(DestinationConnectionIdLength);
 
-            SCID = array.ReadByte();
-            if (SCID > 0)
-                SourceConnectionId = array.ReadByte();
+            SourceConnectionIdLength = array.ReadByte();
+            if (SourceConnectionIdLength > 0)
+                SourceConnectionId = array.ReadGranularInteger(SourceConnectionIdLength);
 
             TokenLength = array.ReadVariableInteger();
-            if (TokenLength != 0)
-                Token = array.ReadBytes((int)TokenLength.Value);
+            if (TokenLength > 0)
+                Token = array.ReadBytes(TokenLength);
 
             Length = array.ReadVariableInteger();
-            PacketNumber = array.ReadBytes(pnSize);
+            PacketNumber = array.ReadGranularInteger(pnSize);
 
             Length = Length - PacketNumber.Size;
 
@@ -60,20 +69,20 @@ namespace QuicNet.Infrastructure.Packets
             result.Add((byte)(Type | (PacketNumber.Size - 1)));
             result.AddRange(ByteUtilities.GetBytes(Version));
 
-            result.Add(DCID);
-            if (DCID > 0)
-                result.Add(DestinationConnectionId);
-            result.Add(SCID);
-            if (SCID > 0)
-                result.Add(SourceConnectionId);
+            result.Add(DestinationConnectionId.Size);
+            if (DestinationConnectionId.Size > 0)
+                result.AddRange(DestinationConnectionId.ToByteArray());
+            result.Add(SourceConnectionId.Size);
+            if (SourceConnectionId.Size > 0)
+                result.AddRange(SourceConnectionId.ToByteArray());
 
+            // TODO: Implement Token
             byte[] tokenLength = new VariableInteger(0);
             byte[] length = new VariableInteger(PacketNumber.Size + (UInt64)frames.Length);
 
             result.AddRange(tokenLength);
             result.AddRange(length);
-            byte[] packetNumber = PacketNumber;
-            result.AddRange(packetNumber);
+            result.AddRange(PacketNumber.ToByteArray());
             result.AddRange(frames);
 
             return result.ToArray();

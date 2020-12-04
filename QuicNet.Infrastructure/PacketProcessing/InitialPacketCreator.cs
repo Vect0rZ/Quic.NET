@@ -1,4 +1,5 @@
-﻿using QuicNet.Infrastructure.Frames;
+﻿using QuickNet.Utilities;
+using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.Packets;
 using QuicNet.Infrastructure.Settings;
 
@@ -6,9 +7,9 @@ namespace QuicNet.Infrastructure.PacketProcessing
 {
     public class InitialPacketCreator
     {
-        public InitialPacket CreateInitialPacket(byte sourceConnectionId, byte destinationConnectionId)
+        public InitialPacket CreateInitialPacket(GranularInteger sourceConnectionId, GranularInteger destinationConnectionId)
         {
-            InitialPacket packet = new InitialPacket();
+            InitialPacket packet = new InitialPacket(destinationConnectionId, sourceConnectionId);
             packet.PacketNumber = 0;
             packet.SourceConnectionId = sourceConnectionId;
             packet.DestinationConnectionId = destinationConnectionId;

@@ -26,8 +26,8 @@ namespace QuicNet.Connections
 
         private PacketWireTransfer _pwt;
 
-        public UInt32 ConnectionId { get; private set; }
-        public UInt32 PeerConnectionId { get; private set; }
+        public GranularInteger ConnectionId { get; private set; }
+        public GranularInteger PeerConnectionId { get; private set; }
 
         public PacketCreator PacketCreator { get; private set; }
         public UInt64 MaxData { get; private set; }

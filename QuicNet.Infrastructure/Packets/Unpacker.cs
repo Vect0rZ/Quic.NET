@@ -16,7 +16,7 @@ namespace QuicNet.Infrastructure.Packets
             switch(type)
             {
                 case QuicPacketType.Initial: result = new InitialPacket(); break;
-                case QuicPacketType.ShortHeader: result = new ShortHeaderPacket(); break;
+                case QuicPacketType.ShortHeader: result = new ShortHeaderPacket(1); break;
             }
 
             if (result == null)

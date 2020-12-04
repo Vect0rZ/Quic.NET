@@ -42,7 +42,7 @@ namespace QuicNet
         {
             _started = false;
             _port = port;
-
+            
             _unpacker = new Unpacker();
             _packetCreator = new InitialPacketCreator();
         }
@@ -130,7 +130,7 @@ namespace QuicNet
         private QuicConnection ProcessInitialPacket(Packet packet, IPEndPoint endPoint)
         {
             QuicConnection result = null;
-            UInt32 availableConnectionId;
+            UInt64 availableConnectionId;
             byte[] data;
             // Unsupported version. Version negotiation packet is sent only on initial connection. All other packets are dropped. (5.2.2 / 16th draft)
             if (packet.Version != QuicVersion.CurrentVersion || !QuicVersion.SupportedVersions.Contains(packet.Version))
