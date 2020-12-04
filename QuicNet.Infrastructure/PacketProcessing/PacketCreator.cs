@@ -24,12 +24,12 @@ namespace QuicNet.Infrastructure.PacketProcessing
             _peerConnectionId = peerConnectionId;
         }
 
-        public ShortHeaderPacket CreateConnectionClosePacket(ErrorCode code, string reason)
+        public ShortHeaderPacket CreateConnectionClosePacket(ErrorCode code, byte frameType, string reason)
         {
             ShortHeaderPacket packet = new ShortHeaderPacket();
             packet.PacketNumber = _ns.Get();
             packet.DestinationConnectionId = (byte)_peerConnectionId;
-            packet.AttachFrame(new ConnectionCloseFrame(code, reason));
+            packet.AttachFrame(new ConnectionCloseFrame(code, frameType, reason));
 
             return packet;
         }

@@ -1,4 +1,5 @@
 ﻿using QuickNet.Utilities;
+using QuicNet.Constants;
 using QuicNet.Context;
 using QuicNet.Exceptions;
 using QuicNet.Infrastructure;
@@ -69,7 +70,7 @@ namespace QuicNet.Connections
                     OnMaxStreamFrame(frame);
                 if (frame.Type == 0x14)
                     OnDataBlockedFrame(frame);
-                if (frame.Type == 0x1c)
+                if (frame.Type == 0x1c || frame.Type == 0x1d)
                     OnConnectionCloseFrame(frame);
             }
         }
@@ -177,7 +178,7 @@ namespace QuicNet.Connections
         }
 
         #region Internal
-  
+
         internal QuicConnection(ConnectionData connection)
         {
             _currentTransferRate = 0;
@@ -241,7 +242,7 @@ namespace QuicNet.Connections
 
         internal void SendMaximumStreamReachedError()
         {
-            ShortHeaderPacket packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.STREAM_LIMIT_ERROR, "Maximum number of streams reached.");
+            ShortHeaderPacket packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.STREAM_LIMIT_ERROR, 0x00, ErrorConstants.MaxNumberOfStreams);
             Send(packet);
         }
 
@@ -261,7 +262,7 @@ namespace QuicNet.Connections
             // If the maximum transfer rate is reached, send FLOW_CONTROL_ERROR
             if (MaximumReached())
             {
-                packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, "Maximum data transfer reached.");
+                packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, 0x00, ErrorConstants.MaxDataTransfer);
 
                 TerminateConnection();
             }

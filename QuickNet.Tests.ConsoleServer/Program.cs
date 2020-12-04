@@ -60,7 +60,7 @@ namespace QuickNet.Tests.ConsoleServer
 
             packet = new InitialPacketCreator().CreateInitialPacket(124, 0);
 
-            ConnectionCloseFrame frame = new ConnectionCloseFrame(ErrorCode.SERVER_BUSY, "The server is too busy to process your request.");
+            ConnectionCloseFrame frame = new ConnectionCloseFrame(ErrorCode.CONNECTION_REFUSED, 0x00, "The server is too busy to process your request.");
             MaxStreamsFrame msidframe = new MaxStreamsFrame(144123, StreamType.ClientUnidirectional);
             //packet.AttachFrame(frame);
             packet.AttachFrame(msidframe);

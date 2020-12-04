@@ -9,7 +9,7 @@ namespace QuicNet.Infrastructure.Frames
 {
     public class StreamFrame : Frame
     {
-        private byte ActualType = 0x08;
+        public byte ActualType = 0x08;
 
         public override byte Type => 0x08;
         public VariableInteger StreamId { get; set; }
@@ -48,7 +48,7 @@ namespace QuicNet.Infrastructure.Frames
                 Length = array.ReadVariableInteger();
             if (FIN_BIT > 0)
                 EndOfStream = true;
-            
+
             StreamData = array.ReadBytes((int)Length.Value);
             ConvertedStreamId = QuickNet.Utilities.StreamId.Decode(ByteUtilities.GetBytes(StreamId.Value));
         }
