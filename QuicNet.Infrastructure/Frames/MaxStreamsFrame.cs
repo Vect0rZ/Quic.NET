@@ -31,10 +31,9 @@ namespace QuicNet.Infrastructure.Frames
         public override byte[] Encode()
         {
             List<byte> result = new List<byte>();
-            result.Add(Type);
 
-            byte[] streamId = MaximumStreams;
-            result.AddRange(streamId);
+            result.Add(Type);
+            result.AddRange(MaximumStreams.ToByteArray());
 
             return result.ToArray();
         }

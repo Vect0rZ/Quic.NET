@@ -51,6 +51,11 @@ namespace QuickNet.Utilities
             return bytes;
         }
 
+        public byte[] ReadBytes(VariableInteger count)
+        {
+            return ReadBytes(count.Value);
+        }
+
         public UInt16 ReadUInt16()
         {
             byte[] bytes = ReadBytes(2);
@@ -78,6 +83,14 @@ namespace QuickNet.Utilities
             _offset += size;
 
             return bytes;
+        }
+
+        public GranularInteger ReadGranularInteger(int size)
+        {
+            byte[] data = ReadBytes(size);
+            GranularInteger result = data;
+
+            return result;
         }
 
         public StreamId ReadStreamId()

@@ -1,12 +1,3 @@
-# Update 08.18.2019
-It might not be obvious, but the library is still in development!
-
-The reason for the lack of updates are two:
-  1. **Rapid** RFC changes;
-  2. **Draft 23 Point 5.3:** Life of a QUIC Connection is still **TBD**. This is a blocker for the overal architecture of the library;
-  
-Expect more updates soon!
-
 <p align="center">
     <img src="https://i.imgur.com/r3nH7de.png"></img>
 </p>
@@ -41,7 +32,7 @@ Expect more updates soon!
 # What is QuicNet?
 
 QuicNet is a .NET implementation of the QUIC protocol mentioned below.
-The implementation stays in line with the 17th version of the [quic-transport](https://datatracker.ietf.org/doc/draft-ietf-quic-transport/?include_text=1) draft,
+The implementation stays in line with the 32nd version of the [quic-transport](https://datatracker.ietf.org/doc/draft-ietf-quic-transport/?include_text=1) draft,
 and does NOT YET offer implementation of the following related drafts:
 
 * [quic-tls](https://datatracker.ietf.org/doc/draft-ietf-quic-tls/?include_text=1)
@@ -57,30 +48,44 @@ Minimal working examples
 ## Server
 ```csharp
 using System;
+using System.Text;
 using QuicNet;
-using QuicNet.Context;
+using QuicNet.Streams;
+using QuicNet.Connections;
 
 namespace QuickNet.Tests.ConsoleServer
 {
     class Program
     {
+        // Fired when a client is connected
+        static void ClientConnected(QuicConnection connection)
+        {
+            connection.OnStreamOpened += StreamOpened;
+        }
+        
+        // Fired when a new stream has been opened (It does not carry data with it)
+        static void StreamOpened(QuicStream stream)
+        {
+            stream.OnStreamDataReceived += StreamDataReceived;
+        }
+        
+        // Fired when a stream received full batch of data
+        static void StreamDataReceived(QuicStream stream, byte[] data)
+        {
+            string decoded = Encoding.UTF8.GetString(data);
+            
+            // Send back data to the client on the same stream
+            stream.Send(Encoding.UTF8.GetBytes("Ping back from server."));
+        }
+        
         static void Main(string[] args)
         {
             QuicListener listener = new QuicListener(11000);
-            listener.Start();
-            while (true)
-            {
-                // Blocks while waiting for a connection
-                QuicConnection client = listener.AcceptQuicClient();
+            listener.OnClientConnected += ClientConnected;
 
-                // Assign an action when a data is received from that client.
-                client.OnDataReceived += (c) => {
-                    byte[] data = c.Data;
-                    Console.WriteLine("Data received: " + Encoding.UTF8.GetString(data));
-                    // Echo back data to the client
-                    c.Send(Encoding.UTF8.GetBytes("Echo!"));
-                };
-            }
+            listener.Start();
+
+            Console.ReadKey();
         }
     }
 }
@@ -88,7 +93,10 @@ namespace QuickNet.Tests.ConsoleServer
 
 ## Client
 ```csharp
-using QuickNet;
+using System;
+using System.Text;
+using QuicNet.Connections;
+using QuicNet.Streams;
 
 namespace QuicNet.Tests.ConsoleClient
 {
@@ -97,16 +105,27 @@ namespace QuicNet.Tests.ConsoleClient
         static void Main(string[] args)
         {
             QuicClient client = new QuicClient();
-            QuicConnection connection = client.Connect("127.0.0.1", 11000);   // Connect to peer (Server)
-            
-            // Create a Bidirectional data stream
+
+            // Connect to peer (Server)
+            QuicConnection connection = client.Connect("127.0.0.1", 11000);
+            // Create a data stream
             QuicStream stream = connection.CreateStream(QuickNet.Utilities.StreamType.ClientBidirectional);
-            
             // Send Data
-            stream.Send(Encoding.UTF8.GetBytes("Hello from Client!"));        
-            
-            // Receive from server (Blocks)
-            byte[] data = stream.Receive();                                   
+            stream.Send(Encoding.UTF8.GetBytes("Hello from Client!"));   
+            // Wait reponse back from the server (Blocks)
+            byte[] data = stream.Receive();
+
+            Console.WriteLine(Encoding.UTF8.GetString(data));
+
+            // Create a new data stream
+            stream = connection.CreateStream(QuickNet.Utilities.StreamType.ClientBidirectional);
+            // Send Data
+            stream.Send(Encoding.UTF8.GetBytes("Hello from Client2!"));
+            // Wait reponse back from the server (Blocks)
+            data = stream.Receive();
+
+            Console.WriteLine(Encoding.UTF8.GetString(data));
+
             Console.ReadKey();
         }
     }

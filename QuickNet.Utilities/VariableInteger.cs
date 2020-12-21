@@ -38,11 +38,21 @@ namespace QuickNet.Utilities
             return integer._integer;
         }
 
+        public static implicit operator VariableInteger(StreamId streamId)
+        {
+            return new VariableInteger(streamId.IntegerValue);
+        }
+
         public static int Size(byte firstByte)
         {
             int result = (int)Math.Pow(2, (firstByte >> 6));
 
             return result;
+        }
+
+        public byte[] ToByteArray()
+        {
+            return Encode(this._integer);
         }
 
         public static byte[] Encode(UInt64 integer)

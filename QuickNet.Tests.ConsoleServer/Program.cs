@@ -6,6 +6,7 @@ using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.PacketProcessing;
 using QuicNet.Infrastructure.Packets;
+using QuicNet.Streams;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,27 +17,39 @@ namespace QuickNet.Tests.ConsoleServer
 {
     class Program
     {
+        /// <summary>
+        /// Fired when Client is connected
+        /// </summary>
+        /// <param name="connection">The new connection</param>
+        static void ClientConnected(QuicConnection connection)
+        {
+            Console.WriteLine("Client Connected");
+            connection.OnStreamOpened += StreamOpened;
+        }
+
+        static void StreamOpened(QuicStream stream)
+        {
+            Console.WriteLine("Stream Opened");
+            stream.OnStreamDataReceived += StreamDataReceived;
+        }
+
+        static void StreamDataReceived(QuicStream stream, byte[] data)
+        {
+            Console.WriteLine("Stream Data Received: ");
+            string decoded = Encoding.UTF8.GetString(data);
+            Console.WriteLine(decoded);
+
+            stream.Send(Encoding.UTF8.GetBytes("Ping back from server."));
+        }
+
         static void Example()
         {
             QuicListener listener = new QuicListener(11000);
+            listener.OnClientConnected += ClientConnected;
+
             listener.Start();
 
-            while (true)
-            {
-                // Blocks while waiting for a connection
-                QuicConnection client = listener.AcceptQuicClient();
-
-                // Assign an action when a data is received from that client.
-                client.OnDataReceived += (c) => {
-
-                    byte[] data = c.Data;
-
-                    Console.WriteLine("Data received: " + Encoding.UTF8.GetString(data));
-
-                    c.Send(Encoding.UTF8.GetBytes("Echo!"));
-                    c.Send(Encoding.UTF8.GetBytes("Echo2!"));
-                };
-            }
+            Console.ReadKey();
         }
 
         static void Main(string[] args)
@@ -49,7 +62,7 @@ namespace QuickNet.Tests.ConsoleServer
             UInt64 uinteger = integer;
             int size = VariableInteger.Size(bytes[0]);
 
-            InitialPacket packet = new InitialPacket()
+            InitialPacket packet = new InitialPacket(0, 0)
             {
                 Version = 16,
                 SourceConnectionId = 124,
@@ -60,7 +73,7 @@ namespace QuickNet.Tests.ConsoleServer
 
             packet = new InitialPacketCreator().CreateInitialPacket(124, 0);
 
-            ConnectionCloseFrame frame = new ConnectionCloseFrame(ErrorCode.SERVER_BUSY, "The server is too busy to process your request.");
+            ConnectionCloseFrame frame = new ConnectionCloseFrame(ErrorCode.CONNECTION_REFUSED, 0x00, "The server is too busy to process your request.");
             MaxStreamsFrame msidframe = new MaxStreamsFrame(144123, StreamType.ClientUnidirectional);
             //packet.AttachFrame(frame);
             packet.AttachFrame(msidframe);
@@ -71,7 +84,7 @@ namespace QuickNet.Tests.ConsoleServer
             byte[] shpdata1 = new byte[] { 1, 1, 2, 3, 5, 8 };
             byte[] shpdata2 = new byte[] { 13, 21, 34, 55, 89, 144 };
 
-            ShortHeaderPacket shp = new ShortHeaderPacket();
+            ShortHeaderPacket shp = new ShortHeaderPacket(0);
             shp.DestinationConnectionId = 124;
             shp.PacketNumber = 2;
 

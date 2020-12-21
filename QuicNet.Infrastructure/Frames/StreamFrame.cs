@@ -9,14 +9,13 @@ namespace QuicNet.Infrastructure.Frames
 {
     public class StreamFrame : Frame
     {
-        private byte ActualType = 0x08;
+        public byte ActualType = 0x08;
 
         public override byte Type => 0x08;
         public VariableInteger StreamId { get; set; }
         public VariableInteger Offset { get; set; }
         public VariableInteger Length { get; set; }
         public byte[] StreamData { get; set; }
-        public StreamId ConvertedStreamId { get; set; }
         public bool EndOfStream { get; set; }
 
         public StreamFrame()
@@ -28,8 +27,8 @@ namespace QuicNet.Infrastructure.Frames
         {
             StreamId = streamId;
             StreamData = data;
-            Length = (UInt64)data.Length;
             Offset = offset;
+            Length = (UInt64)data.Length;
             EndOfStream = eos;
         }
 
@@ -48,9 +47,8 @@ namespace QuicNet.Infrastructure.Frames
                 Length = array.ReadVariableInteger();
             if (FIN_BIT > 0)
                 EndOfStream = true;
-            
+
             StreamData = array.ReadBytes((int)Length.Value);
-            ConvertedStreamId = QuickNet.Utilities.StreamId.Decode(ByteUtilities.GetBytes(StreamId.Value));
         }
 
         public override byte[] Encode()
@@ -72,16 +70,10 @@ namespace QuicNet.Infrastructure.Frames
             result.AddRange(streamId);
 
             if (OFF_BIT > 0)
-            {
-                byte[] offset = Offset;
-                result.AddRange(offset);
-            }
+                result.AddRange(Offset.ToByteArray());
 
             if (LEN_BIT > 0)
-            {
-                byte[] length = Length;
-                result.AddRange(length);
-            }
+                result.AddRange(Length.ToByteArray());
 
             result.AddRange(StreamData);
 

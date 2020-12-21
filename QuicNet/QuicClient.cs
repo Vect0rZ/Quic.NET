@@ -21,7 +21,7 @@ namespace QuicNet
     /// <summary>
     /// Quic Client. Used for sending and receiving data from a Quic Server.
     /// </summary>
-    public class QuicClient
+    public class QuicClient : QuicTransport
     {
         private IPEndPoint _peerIp;
         private UdpClient _client;
@@ -105,7 +105,7 @@ namespace QuicNet
         /// </summary>
         /// <param name="connectionId"></param>
         /// <param name="peerConnectionId"></param>
-        private void EstablishConnection(UInt32 connectionId, UInt32 peerConnectionId)
+        private void EstablishConnection(GranularInteger connectionId, GranularInteger peerConnectionId)
         {
             ConnectionData connection = new ConnectionData(_pwt, connectionId, peerConnectionId);
             _connection = new QuicConnection(connection);

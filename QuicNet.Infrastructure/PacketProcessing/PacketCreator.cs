@@ -13,10 +13,10 @@ namespace QuicNet.Infrastructure.PacketProcessing
     public class PacketCreator
     {
         private NumberSpace _ns;
-        private UInt32 _connectionId;
-        private UInt32 _peerConnectionId;
+        private GranularInteger _connectionId;
+        private GranularInteger _peerConnectionId;
 
-        public PacketCreator(UInt32 connectionId, UInt32 peerConnectionId)
+        public PacketCreator(GranularInteger connectionId, GranularInteger peerConnectionId)
         {
             _ns = new NumberSpace();
 
@@ -24,19 +24,19 @@ namespace QuicNet.Infrastructure.PacketProcessing
             _peerConnectionId = peerConnectionId;
         }
 
-        public ShortHeaderPacket CreateConnectionClosePacket(ErrorCode code, string reason)
+        public ShortHeaderPacket CreateConnectionClosePacket(ErrorCode code, byte frameType, string reason)
         {
-            ShortHeaderPacket packet = new ShortHeaderPacket();
+            ShortHeaderPacket packet = new ShortHeaderPacket(_peerConnectionId.Size);
             packet.PacketNumber = _ns.Get();
             packet.DestinationConnectionId = (byte)_peerConnectionId;
-            packet.AttachFrame(new ConnectionCloseFrame(code, reason));
+            packet.AttachFrame(new ConnectionCloseFrame(code, frameType, reason));
 
             return packet;
         }
 
         public ShortHeaderPacket CreateDataPacket(UInt64 streamId, byte[] data, UInt64 offset)
         {
-            ShortHeaderPacket packet = new ShortHeaderPacket();
+            ShortHeaderPacket packet = new ShortHeaderPacket(_peerConnectionId.Size);
             packet.PacketNumber = _ns.Get();
             packet.DestinationConnectionId = (byte)_peerConnectionId;
             packet.AttachFrame(new StreamFrame(streamId, data, offset, true));
@@ -46,12 +46,12 @@ namespace QuicNet.Infrastructure.PacketProcessing
 
         public InitialPacket CreateServerBusyPacket()
         {
-            return new InitialPacket();
+            return new InitialPacket(0, 0);
         }
 
         public ShortHeaderPacket CreateShortHeaderPacket()
         {
-            return new ShortHeaderPacket();
+            return new ShortHeaderPacket(0);
         }
     }
 }

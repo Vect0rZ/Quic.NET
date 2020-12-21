@@ -1,5 +1,7 @@
 ﻿using QuickNet.Utilities;
+using QuicNet.Constants;
 using QuicNet.Context;
+using QuicNet.Events;
 using QuicNet.Exceptions;
 using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Frames;
@@ -25,14 +27,14 @@ namespace QuicNet.Connections
 
         private PacketWireTransfer _pwt;
 
-        public UInt32 ConnectionId { get; private set; }
-        public UInt32 PeerConnectionId { get; private set; }
+        public GranularInteger ConnectionId { get; private set; }
+        public GranularInteger PeerConnectionId { get; private set; }
 
         public PacketCreator PacketCreator { get; private set; }
         public UInt64 MaxData { get; private set; }
         public UInt64 MaxStreams { get; private set; }
 
-        public event Action<QuicStream> OnDataReceived;
+        public StreamOpenedEvent OnStreamOpened { get; set; }
 
         /// <summary>
         /// Creates a new stream for sending/receiving data.
@@ -51,8 +53,10 @@ namespace QuicNet.Connections
             return stream;
         }
 
-        public void ProcessFrames(List<Frame> frames)
+        public QuicStream ProcessFrames(List<Frame> frames)
         {
+            QuicStream stream = null;
+
             foreach (Frame frame in frames)
             {
                 if (frame.Type == 0x01)
@@ -60,7 +64,7 @@ namespace QuicNet.Connections
                 if (frame.Type == 0x04)
                     OnRstStreamFrame(frame);
                 if (frame.Type >= 0x08 && frame.Type <= 0x0f)
-                    OnStreamFrame(frame);
+                    stream = OnStreamFrame(frame);
                 if (frame.Type == 0x10)
                     OnMaxDataFrame(frame);
                 if (frame.Type == 0x11)
@@ -69,9 +73,11 @@ namespace QuicNet.Connections
                     OnMaxStreamFrame(frame);
                 if (frame.Type == 0x14)
                     OnDataBlockedFrame(frame);
-                if (frame.Type == 0x1c)
+                if (frame.Type >= 0x1c && frame.Type <= 0x1d)
                     OnConnectionCloseFrame(frame);
             }
+
+            return stream;
         }
 
         public void IncrementRate(int length)
@@ -108,24 +114,32 @@ namespace QuicNet.Connections
             }
         }
 
-        private void OnStreamFrame(Frame frame)
+        private QuicStream OnStreamFrame(Frame frame)
         {
+            QuicStream stream = null;
+
             StreamFrame sf = (StreamFrame)frame;
-            if (_streams.ContainsKey(sf.ConvertedStreamId.Id) == false)
+            StreamId streamId = sf.StreamId;
+
+            if (_streams.ContainsKey(streamId.Id) == false)
             {
-                QuicStream stream = new QuicStream(this, sf.ConvertedStreamId);
-                stream.ProcessData(sf);
+                stream = new QuicStream(this, streamId);
 
                 if ((UInt64)_streams.Count < MaxStreams)
-                    _streams.Add(sf.ConvertedStreamId.Id, stream);
+                    _streams.Add(streamId.Id, stream);
                 else
                     SendMaximumStreamReachedError();
+
+                OnStreamOpened?.Invoke(stream);
             }
             else
             {
-                QuicStream stream = _streams[sf.ConvertedStreamId.Id];
-                stream.ProcessData(sf);
+                stream = _streams[streamId.Id];
             }
+
+            stream.ProcessData(sf);
+
+            return stream;
         }
 
         private void OnMaxDataFrame(Frame frame)
@@ -165,19 +179,20 @@ namespace QuicNet.Connections
         private void OnStreamDataBlockedFrame(Frame frame)
         {
             StreamDataBlockedFrame sdbf = (StreamDataBlockedFrame)frame;
+            StreamId streamId = sdbf.StreamId;
 
-            if (_streams.ContainsKey(sdbf.ConvertedStreamId.Id) == false)
+            if (_streams.ContainsKey(streamId.Id) == false)
                 return;
-            QuicStream stream = _streams[sdbf.ConvertedStreamId.Id];
+            QuicStream stream = _streams[streamId.Id];
 
             stream.ProcessStreamDataBlocked(sdbf);
 
             // Remove the stream from the connection
-            _streams.Remove(sdbf.ConvertedStreamId.Id);
+            _streams.Remove(streamId.Id);
         }
 
         #region Internal
-  
+
         internal QuicConnection(ConnectionData connection)
         {
             _currentTransferRate = 0;
@@ -192,6 +207,23 @@ namespace QuicNet.Connections
             PacketCreator = new PacketCreator(ConnectionId, PeerConnectionId);
             MaxData = QuicSettings.MaxData;
             MaxStreams = QuicSettings.MaximumStreamId;
+        }
+
+        public QuicStream OpenStream()
+        {
+            QuicStream stream = null;
+
+            while (stream == null /* TODO: Or Timeout? */)
+            {
+                Packet packet = _pwt.ReadPacket();
+                if (packet is ShortHeaderPacket)
+                {
+                    ShortHeaderPacket shp = (ShortHeaderPacket)packet;
+                    stream = ProcessFrames(shp.GetFrames());
+                }
+            }
+
+            return stream;
         }
 
         /// <summary>
@@ -226,11 +258,6 @@ namespace QuicNet.Connections
             return _pwt.SendPacket(packet);
         }
 
-        internal void DataReceived(QuicStream context)
-        {
-            OnDataReceived?.Invoke(context);
-        }
-
         internal void TerminateConnection()
         {
             _state = ConnectionState.Draining;
@@ -241,7 +268,7 @@ namespace QuicNet.Connections
 
         internal void SendMaximumStreamReachedError()
         {
-            ShortHeaderPacket packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.STREAM_LIMIT_ERROR, "Maximum number of streams reached.");
+            ShortHeaderPacket packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.STREAM_LIMIT_ERROR, 0x00, ErrorConstants.MaxNumberOfStreams);
             Send(packet);
         }
 
@@ -261,7 +288,7 @@ namespace QuicNet.Connections
             // If the maximum transfer rate is reached, send FLOW_CONTROL_ERROR
             if (MaximumReached())
             {
-                packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, "Maximum data transfer reached.");
+                packet = PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, 0x00, ErrorConstants.MaxDataTransfer);
 
                 TerminateConnection();
             }

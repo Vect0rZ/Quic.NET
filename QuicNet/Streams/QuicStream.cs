@@ -1,6 +1,8 @@
 ﻿using QuickNet.Utilities;
 using QuicNet.Connections;
+using QuicNet.Constants;
 using QuicNet.Context;
+using QuicNet.Events;
 using QuicNet.Exceptions;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.Packets;
@@ -26,6 +28,8 @@ namespace QuicNet.Streams
         public StreamState State { get; set; }
         public StreamType Type { get; set; }
         public StreamId StreamId { get; }
+
+        public StreamDataReceivedEvent OnStreamDataReceived { get; set; }
 
         public byte[] Data
         {
@@ -104,6 +108,14 @@ namespace QuicNet.Streams
             return false;
         }
 
+        public bool IsOpen()
+        {
+            if (State == StreamState.DataRecvd || State == StreamState.ResetRecvd)
+                return false;
+
+            return true;
+        }
+
         public void ProcessData(StreamFrame frame)
         {
             // Do not accept data if the stream is reset.
@@ -131,7 +143,7 @@ namespace QuicNet.Streams
             // Terminate connection if maximum stream data is reached
             if (_currentTransferRate >= _maximumStreamData)
             {
-                ShortHeaderPacket errorPacket = _connection.PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, "Maximum stream data transfer reached.");
+                ShortHeaderPacket errorPacket = _connection.PacketCreator.CreateConnectionClosePacket(Infrastructure.ErrorCode.FLOW_CONTROL_ERROR, frame.ActualType, ErrorConstants.MaxDataTransfer);
                 _connection.SendData(errorPacket);
                 _connection.TerminateConnection();
 
@@ -140,9 +152,9 @@ namespace QuicNet.Streams
 
             if (State == StreamState.SizeKnown && IsStreamFull())
             {
-                _connection.DataReceived(this);
-
                 State = StreamState.DataRecvd;
+
+                OnStreamDataReceived?.Invoke(this, Data);
             }
         }
 
