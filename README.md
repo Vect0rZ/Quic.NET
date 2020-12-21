@@ -32,7 +32,7 @@
 # What is QuicNet?
 
 QuicNet is a .NET implementation of the QUIC protocol mentioned below.
-The implementation stays in line with the 17th version of the [quic-transport](https://datatracker.ietf.org/doc/draft-ietf-quic-transport/?include_text=1) draft,
+The implementation stays in line with the 32nd version of the [quic-transport](https://datatracker.ietf.org/doc/draft-ietf-quic-transport/?include_text=1) draft,
 and does NOT YET offer implementation of the following related drafts:
 
 * [quic-tls](https://datatracker.ietf.org/doc/draft-ietf-quic-tls/?include_text=1)
