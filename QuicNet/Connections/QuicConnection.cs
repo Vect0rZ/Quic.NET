@@ -35,6 +35,7 @@ namespace QuicNet.Connections
         public UInt64 MaxStreams { get; private set; }
 
         public StreamOpenedEvent OnStreamOpened { get; set; }
+        public ConnectionClosedEvent OnConnectionClosed { get; set; }
 
         /// <summary>
         /// Creates a new stream for sending/receiving data.
@@ -98,6 +99,8 @@ namespace QuicNet.Connections
             ConnectionCloseFrame ccf = (ConnectionCloseFrame)frame;
             _state = ConnectionState.Draining;
             _lastError = ccf.ReasonPhrase;
+
+            OnConnectionClosed?.Invoke(this);
         }
 
         private void OnRstStreamFrame(Frame frame)
@@ -152,10 +155,11 @@ namespace QuicNet.Connections
         private void OnMaxStreamDataFrame(Frame frame)
         {
             MaxStreamDataFrame msdf = (MaxStreamDataFrame)frame;
-            if (_streams.ContainsKey(msdf.StreamId))
+            StreamId streamId = msdf.StreamId;
+            if (_streams.ContainsKey(streamId.Id))
             {
                 // Find and set the new maximum stream data on the stream
-                QuicStream stream = _streams[msdf.ConvertedStreamId.Id];
+                QuicStream stream = _streams[streamId.Id];
                 stream.SetMaximumStreamData(msdf.MaximumStreamData.Value);
             }
         }

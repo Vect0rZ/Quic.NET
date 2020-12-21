@@ -58,13 +58,35 @@ namespace QuicNet.Streams
 
             _connection.IncrementRate(data.Length);
 
-            ShortHeaderPacket packet = _connection.PacketCreator.CreateDataPacket(this.StreamId.IntegerValue, data, _sendOffset);
-            if (_connection.MaximumReached())
-                packet.AttachFrame(new StreamDataBlockedFrame(StreamId.IntegerValue, (UInt64)data.Length));
+            int numberOfPackets = (data.Length / QuicSettings.PMTU) + 1;
+            int leftoverCarry = data.Length % QuicSettings.PMTU;
 
-            _sendOffset += (UInt64)data.Length;
+            for (int i = 0; i < numberOfPackets; i++)
+            {
+                bool eos = false;
+                int dataSize = QuicSettings.PMTU;
+                if (i == numberOfPackets - 1)
+                {
+                    eos = true;
+                    dataSize = leftoverCarry;
+                }
 
-            return _connection.SendData(packet);
+                byte[] buffer = new byte[dataSize];
+                Buffer.BlockCopy(data, (Int32)_sendOffset, buffer, 0, dataSize);
+
+                ShortHeaderPacket packet = _connection.PacketCreator.CreateDataPacket(this.StreamId.IntegerValue, buffer, _sendOffset, eos);
+                if (i == 0 && data.Length >= QuicSettings.MaxStreamData)
+                    packet.AttachFrame(new MaxStreamDataFrame(this.StreamId.IntegerValue, (UInt64)(data.Length + 1)));
+
+                if (_connection.MaximumReached())
+                    packet.AttachFrame(new StreamDataBlockedFrame(StreamId.IntegerValue, (UInt64)data.Length));
+
+                _sendOffset += (UInt64)buffer.Length;
+
+                _connection.SendData(packet);
+            }
+            
+            return true;
         }
 
         /// <summary>
@@ -172,7 +194,7 @@ namespace QuicNet.Streams
                 if (kvp.Key > 0 && kvp.Key != length)
                     return false;
 
-                length = (UInt64)kvp.Value.Length;
+                length += (UInt64)kvp.Value.Length;
             }
 
             return true;
