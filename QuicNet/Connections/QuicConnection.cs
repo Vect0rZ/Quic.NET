@@ -19,13 +19,13 @@ namespace QuicNet.Connections
 {
     public class QuicConnection
     {
+        private readonly NumberSpace _ns = new NumberSpace();
+        private readonly PacketWireTransfer _pwt;
+
         private UInt64 _currentTransferRate;
         private ConnectionState _state;
         private string _lastError;
         private Dictionary<UInt64, QuicStream> _streams;
-        private NumberSpace _ns = new NumberSpace();
-
-        private PacketWireTransfer _pwt;
 
         public GranularInteger ConnectionId { get; private set; }
         public GranularInteger PeerConnectionId { get; private set; }
@@ -119,7 +119,7 @@ namespace QuicNet.Connections
 
         private QuicStream OnStreamFrame(Frame frame)
         {
-            QuicStream stream = null;
+            QuicStream stream;
 
             StreamFrame sf = (StreamFrame)frame;
             StreamId streamId = sf.StreamId;
@@ -220,9 +220,8 @@ namespace QuicNet.Connections
             while (stream == null /* TODO: Or Timeout? */)
             {
                 Packet packet = _pwt.ReadPacket();
-                if (packet is ShortHeaderPacket)
+                if (packet is ShortHeaderPacket shp)
                 {
-                    ShortHeaderPacket shp = (ShortHeaderPacket)packet;
                     stream = ProcessFrames(shp.GetFrames());
                 }
             }
@@ -238,9 +237,8 @@ namespace QuicNet.Connections
         {
             Packet packet = _pwt.ReadPacket();
 
-            if (packet is ShortHeaderPacket)
+            if (packet is ShortHeaderPacket shp)
             {
-                ShortHeaderPacket shp = (ShortHeaderPacket)packet;
                 ProcessFrames(shp.GetFrames());
             }
 

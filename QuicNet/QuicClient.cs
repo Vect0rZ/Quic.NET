@@ -27,9 +27,6 @@ namespace QuicNet
         private UdpClient _client;
 
         private QuicConnection _connection;
-        private QuicStream _stream;
-
-        private Unpacker _unpacker;
         private InitialPacketCreator _packetCreator;
 
         private UInt64 _maximumStreams = QuicSettings.MaximumStreamId;
@@ -38,7 +35,6 @@ namespace QuicNet
         public QuicClient()
         {
             _client = new UdpClient();
-            _unpacker = new Unpacker();
             _packetCreator = new InitialPacketCreator();
         }
 
@@ -81,16 +77,13 @@ namespace QuicNet
             for (int i = frames.Count - 1; i > 0; i--)
             {
                 Frame frame = frames[i];
-                if (frame is ConnectionCloseFrame)
+                if (frame is ConnectionCloseFrame ccf)
                 {
-                    ConnectionCloseFrame ccf = (ConnectionCloseFrame)frame;
-
                     throw new QuicConnectivityException(ccf.ReasonPhrase);
                 }
 
-                if (frame is MaxStreamsFrame)
+                if (frame is MaxStreamsFrame msf)
                 {
-                    MaxStreamsFrame msf = (MaxStreamsFrame)frame;
                     _maximumStreams = msf.MaximumStreams.Value;
                 }
 

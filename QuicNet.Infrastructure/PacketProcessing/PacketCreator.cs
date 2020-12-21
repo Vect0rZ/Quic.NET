@@ -12,9 +12,9 @@ namespace QuicNet.Infrastructure.PacketProcessing
 {
     public class PacketCreator
     {
-        private NumberSpace _ns;
-        private GranularInteger _connectionId;
-        private GranularInteger _peerConnectionId;
+        private readonly NumberSpace _ns;
+        private readonly GranularInteger _connectionId;
+        private readonly GranularInteger _peerConnectionId;
 
         public PacketCreator(GranularInteger connectionId, GranularInteger peerConnectionId)
         {

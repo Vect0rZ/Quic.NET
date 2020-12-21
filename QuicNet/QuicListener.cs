@@ -25,12 +25,12 @@ namespace QuicNet
     /// </summary>
     public class QuicListener : QuicTransport
     {
-        private UdpClient _client;
-
-        private Unpacker _unpacker;
-        private InitialPacketCreator _packetCreator;
+        private readonly Unpacker _unpacker;
+        private readonly InitialPacketCreator _packetCreator;
 
         private PacketWireTransfer _pwt;
+
+        private UdpClient _client;
 
         private int _port;
         private bool _started;
@@ -81,7 +81,8 @@ namespace QuicNet
         /// </summary>
         public void Close()
         {
-            _client.Close();
+            if (_started)
+                _client.Close();
         }
 
 

@@ -17,7 +17,7 @@ namespace QuicNet.Tests.ConsoleClient
             // Create a data stream
             QuicStream stream = connection.CreateStream(QuickNet.Utilities.StreamType.ClientBidirectional);
             // Send Data
-            stream.Send(Encoding.UTF8.GetBytes(GenerateData(64)));   
+            stream.Send(Encoding.UTF8.GetBytes("Hello from Client!"));   
             // Wait reponse back from the server
             byte[] data = stream.Receive();
 
