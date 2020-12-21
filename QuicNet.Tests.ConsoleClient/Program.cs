@@ -1,11 +1,7 @@
-using QuicNet.Connections;
-using QuicNet.Context;
-using QuicNet.Streams;
 using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
+using QuicNet.Connections;
+using QuicNet.Streams;
 
 namespace QuicNet.Tests.ConsoleClient
 {
@@ -14,22 +10,26 @@ namespace QuicNet.Tests.ConsoleClient
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("Starting client.");
             QuicClient client = new QuicClient();
-            
-            QuicConnection connection = client.Connect("127.0.0.1", 11000);   // Connect to peer (Server)
-            QuicStream stream = connection.CreateStream(QuickNet.Utilities.StreamType.ClientBidirectional); // Create a data stream
-            stream.Send(Encoding.UTF8.GetBytes("Hello from Client!"));        // Send Data
+
+            // Connect to peer (Server)
+            QuicConnection connection = client.Connect("127.0.0.1", 11000);
+            // Create a data stream
+            QuicStream stream = connection.CreateStream(QuickNet.Utilities.StreamType.ClientBidirectional);
+            // Send Data
+            stream.Send(Encoding.UTF8.GetBytes("Hello from Client!"));   
+            // Wait reponse back from the server
             byte[] data = stream.Receive();
 
-            Console.WriteLine("Waiting for message from the server");
             Console.WriteLine(Encoding.UTF8.GetString(data));
 
-            stream = connection.CreateStream(QuickNet.Utilities.StreamType.ClientBidirectional); // Create a data stream
+            // Create a new data stream
+            stream = connection.CreateStream(QuickNet.Utilities.StreamType.ClientBidirectional);
+            // Send Data
             stream.Send(Encoding.UTF8.GetBytes("Hello from Client2!"));
+            // Wait reponse back from the server
             data = stream.Receive();
 
-            Console.WriteLine("Waiting for message from the server");
             Console.WriteLine(Encoding.UTF8.GetString(data));
 
             Console.ReadKey();

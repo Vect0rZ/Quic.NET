@@ -17,6 +17,10 @@ namespace QuickNet.Tests.ConsoleServer
 {
     class Program
     {
+        /// <summary>
+        /// Fired when Client is connected
+        /// </summary>
+        /// <param name="connection">The new connection</param>
         static void ClientConnected(QuicConnection connection)
         {
             Console.WriteLine("Client Connected");
