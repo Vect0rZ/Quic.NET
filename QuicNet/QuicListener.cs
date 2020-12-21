@@ -2,6 +2,7 @@
 using QuicNet.Connections;
 using QuicNet.Constants;
 using QuicNet.Context;
+using QuicNet.Events;
 using QuicNet.Exceptions;
 using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Frames;
@@ -22,7 +23,7 @@ namespace QuicNet
     /// <summary>
     /// Quic Listener - a Quic server that processes incomming connections and if possible sends back data on it's peers.
     /// </summary>
-    public class QuicListener
+    public class QuicListener : QuicTransport
     {
         private UdpClient _client;
 
@@ -33,6 +34,8 @@ namespace QuicNet
 
         private int _port;
         private bool _started;
+
+        public event ClientConnectedEvent OnClientConnected;
 
         /// <summary>
         /// Create a new instance of QuicListener.
@@ -55,6 +58,22 @@ namespace QuicNet
             _client = new UdpClient(_port);
             _started = true;
             _pwt = new PacketWireTransfer(_client, null);
+
+            while (true)
+            {
+                Packet packet = _pwt.ReadPacket();
+                if (packet is InitialPacket)
+                {
+                    QuicConnection connection = ProcessInitialPacket(packet, _pwt.LastTransferEndpoint());
+
+                    OnClientConnected?.Invoke(connection);
+                }
+
+                if (packet is ShortHeaderPacket)
+                {
+                    ProcessShortHeaderPacket(packet);
+                }
+            }
         }
 
         /// <summary>
@@ -65,61 +84,6 @@ namespace QuicNet
             _client.Close();
         }
 
-        /// <summary>
-        /// Blocks and waits for incomming connection. Does NOT block additional incomming packets.
-        /// </summary>
-        /// <returns>Returns an instance of QuicConnection.</returns>
-        public QuicConnection AcceptQuicClient()
-        {
-            if (!_started)
-                throw new QuicListenerNotStartedException("Please call the Start() method before receving data.");
-
-            /*
-             * Wait until there is initial packet incomming.
-             * Otherwise we still need to orchestrate any other protocol or data pakcets.
-             * */
-            while (true)
-            {
-                Packet packet = _pwt.ReadPacket();
-                if (packet is InitialPacket)
-                {
-                    QuicConnection connection = ProcessInitialPacket(packet, _pwt.LastTransferEndpoint());
-                    return connection;
-                }
-
-                OrchestratePacket(packet);
-            }
-        }
-
-        /// <summary>
-        /// Starts receiving data from clients.
-        /// </summary>
-        private void Receive()
-        {
-            while (true)
-            {
-                Packet packet = _pwt.ReadPacket();
-
-                // Discard unknown packets
-                if (packet == null)
-                    continue;
-
-                // TODO: Validate packet before dispatching
-                OrchestratePacket(packet);
-            }
-        }
-
-        /// <summary>
-        /// Orchestrates packets to connections, depending on the packet type.
-        /// </summary>
-        /// <param name="packet"></param>
-        private void OrchestratePacket(Packet packet)
-        {
-            if (packet is ShortHeaderPacket)
-            {
-                ProcessShortHeaderPacket(packet);
-            }
-        }
 
         /// <summary>
         /// Processes incomming initial packet and creates or halts a connection.
@@ -150,7 +114,7 @@ namespace QuicNet
             {
                 ip.AttachFrame(new ConnectionCloseFrame(ErrorCode.PROTOCOL_VIOLATION, 0x00, ErrorConstants.PMTUNotReached));
             }
-            else if (ConnectionPool.AddConnection(new ConnectionData(_pwt, cast.SourceConnectionId, 0), out availableConnectionId) == true)
+            else if (ConnectionPool.AddConnection(new ConnectionData(new PacketWireTransfer(_client, endPoint), cast.SourceConnectionId, 0), out availableConnectionId) == true)
             {
                 // Tell the peer the available connection id
                 ip.SourceConnectionId = (byte)availableConnectionId;
@@ -175,23 +139,6 @@ namespace QuicNet
                 return result;
 
             return null;
-        }
-
-        /// <summary>
-        /// Processes short header packet, by distributing the frames towards connections.
-        /// </summary>
-        /// <param name="packet"></param>
-        private void ProcessShortHeaderPacket(Packet packet)
-        {
-            ShortHeaderPacket shp = (ShortHeaderPacket)packet;
-
-            QuicConnection connection = ConnectionPool.Find(shp.DestinationConnectionId);
-
-            // No suitable connection found. Discard the packet.
-            if (connection == null)
-                return;
-
-            connection.ProcessFrames(shp.GetFrames());
         }
     }
 }

@@ -6,6 +6,7 @@ using QuicNet.Infrastructure;
 using QuicNet.Infrastructure.Frames;
 using QuicNet.Infrastructure.PacketProcessing;
 using QuicNet.Infrastructure.Packets;
+using QuicNet.Streams;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -16,27 +17,35 @@ namespace QuickNet.Tests.ConsoleServer
 {
     class Program
     {
+        static void ClientConnected(QuicConnection connection)
+        {
+            Console.WriteLine("Client Connected");
+            connection.OnStreamOpened += StreamOpened;
+        }
+
+        static void StreamOpened(QuicStream stream)
+        {
+            Console.WriteLine("Stream Opened");
+            stream.OnStreamDataReceived += StreamDataReceived;
+        }
+
+        static void StreamDataReceived(QuicStream stream, byte[] data)
+        {
+            Console.WriteLine("Stream Data Received: ");
+            string decoded = Encoding.UTF8.GetString(data);
+            Console.WriteLine(decoded);
+
+            stream.Send(Encoding.UTF8.GetBytes("Ping back from server."));
+        }
+
         static void Example()
         {
             QuicListener listener = new QuicListener(11000);
+            listener.OnClientConnected += ClientConnected;
+
             listener.Start();
 
-            while (true)
-            {
-                // Blocks while waiting for a connection
-                QuicConnection client = listener.AcceptQuicClient();
-
-                // Assign an action when a data is received from that client.
-                client.OnDataReceived += (c) => {
-
-                    byte[] data = c.Data;
-
-                    Console.WriteLine("Data received: " + Encoding.UTF8.GetString(data));
-
-                    c.Send(Encoding.UTF8.GetBytes("Echo!"));
-                    c.Send(Encoding.UTF8.GetBytes("Echo2!"));
-                };
-            }
+            Console.ReadKey();
         }
 
         static void Main(string[] args)

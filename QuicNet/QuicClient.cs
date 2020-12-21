@@ -21,7 +21,7 @@ namespace QuicNet
     /// <summary>
     /// Quic Client. Used for sending and receiving data from a Quic Server.
     /// </summary>
-    public class QuicClient
+    public class QuicClient : QuicTransport
     {
         private IPEndPoint _peerIp;
         private UdpClient _client;
