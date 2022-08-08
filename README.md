@@ -135,7 +135,7 @@ namespace QuicNet.Tests.ConsoleClient
 
 # What is QUIC?
 
-QUIC is an standardised transport layer protocol conforming with [RFC9000](https://datatracker.ietf.org/doc/html/rfc9000) designed by Google, aiming to speed up the data transfer of connection-oriented web applications.
+QUIC is an standardised transport layer protocol conforming with [RFC 9000](https://datatracker.ietf.org/doc/html/rfc9000) designed by Google, aiming to speed up the data transfer of connection-oriented web applications.
 This application-level protocol aims to switch from TCP to UDP by using several techniques to resemble the TCP transfer while reducing the connection handshakes,
 as well as to provide sensible multiplexing techniques in a way that different data entities can be interleaved during transfer.
 
