@@ -135,18 +135,18 @@ namespace QuicNet.Tests.ConsoleClient
 
 # What is QUIC?
 
-QUIC is an experimental transport layer protocol designed by Google, aiming to speed up the data transfer of connection-oriented web applications.
+QUIC is an standardised transport layer protocol conforming with [RFC 9000](https://datatracker.ietf.org/doc/html/rfc9000) designed by Google, aiming to speed up the data transfer of connection-oriented web applications.
 This application-level protocol aims to switch from TCP to UDP by using several techniques to resemble the TCP transfer while reducing the connection handshakes,
 as well as to provide sensible multiplexing techniques in a way that different data entities can be interleaved during transfer.
 
 ## Connections
-Connections are the first tier logical channels representing a communication between two endpoints. When a connection is established, a ConnectionId is negotiated between the two endpoints. The ConnectionId is used for identifying connection even if changes occur on the lower protocol layers, such as a Phone changing Wi-Fi or switching from Wi-Fi to Mobile data. This mechanism prevents restarting the negotiation flow and resending data.
+Connections are the first tier logical channels representing a communication between two endpoints. When a connection is established, a Connection ID is negotiated between the two endpoints. The Connection ID is used for identifying connection even if changes occur on the lower protocol layers, such as a Phone changing Wi-Fi or switching from Wi-Fi to Mobile data. This mechanism is called Connection Migration which prevents restarting the negotiation flow and resending data.
 
 ## Streams
-Streams are second tier logical channels representing streams of data. A single connection can have a negotiated number of streams (8 maximum for example) which serve as multiplexing entities. Every stream has it's own, generated StreamId, used for identifiying the different data objects being transferred. Streams are closed when all of the data is read, or the negotiated maximum data transfer is reached.
+Streams are second tier logical channels representing streams of data. A single connection can have a negotiated number of streams (8 maximum for example) which serve as multiplexing entities. Every stream has it's own, generated Stream ID, used for identifiying the different data objects being transferred. Streams are closed when all of the data is read, or the negotiated maximum data transfer is reached.
 
 ## Packet
-Packets are the data transfer units. The packet header contains information about the connection that this packet is being sent to, and cryptographic information. After stipping off the additional transfer information, what is left are the Frames of data (A packet can have multiple frames).
+Packets are the data transfer units. The packet header contains information about the connection that this packet is being sent to, and cryptographic information. After stripping off the additional transfer information, what is left are the Frames of data (A packet can have multiple frames).
 
 ## Frame
 Frames are the smallest unit that contain either data that needs to be trasferred to the Endpoint or protocol packets necessary for actions such as handshake negotiation, error handling and other.
