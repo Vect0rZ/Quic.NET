@@ -1,17 +1,16 @@
-﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio Version 16
-VisualStudioVersion = 16.0.29926.136
+# Visual Studio Version 17
+VisualStudioVersion = 17.6.33829.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuicNet", "QuicNet\QuicNet.csproj", "{139530BB-CB8C-4F82-B7D9-31C445EF2F69}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuickNet.Tests.ConsoleServer", "QuickNet.Tests.ConsoleServer\QuickNet.Tests.ConsoleServer.csproj", "{D348C0C7-7F21-4E6D-855B-397BCC35F4B6}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuickNet.Tests.ConsoleServer", "QuickNet.Tests.ConsoleServer\QuickNet.Tests.ConsoleServer.csproj", "{D348C0C7-7F21-4E6D-855B-397BCC35F4B6}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuicNet.Infrastructure", "QuicNet.Infrastructure\QuicNet.Infrastructure.csproj", "{8159F64B-7511-4DFF-8998-EFB029334A56}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuicNet.Tests.Unit", "QuicNet.Tests.Unit\QuicNet.Tests.Unit.csproj", "{4170C9D8-B2D1-4E59-9F5F-C9665CAD9A37}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuicNet.Tests.Unit", "QuicNet.Tests.Unit\QuicNet.Tests.Unit.csproj", "{4170C9D8-B2D1-4E59-9F5F-C9665CAD9A37}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "QuicNet.Tests.ConsoleClient", "QuicNet.Tests.ConsoleClient\QuicNet.Tests.ConsoleClient.csproj", "{1DDC355E-7FF1-4ED5-8431-9D61711A06DF}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuicNet.Tests.ConsoleClient", "QuicNet.Tests.ConsoleClient\QuicNet.Tests.ConsoleClient.csproj", "{1DDC355E-7FF1-4ED5-8431-9D61711A06DF}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "QuicNet.Utilities", "QuickNet.Utilities\QuicNet.Utilities.csproj", "{69A23C4B-B675-4E1E-A4B4-EF8740C30C07}"
 EndProject
