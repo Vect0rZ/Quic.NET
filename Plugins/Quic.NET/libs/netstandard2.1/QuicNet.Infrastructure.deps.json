@@ -1,0 +1,37 @@
+{
+  "runtimeTarget": {
+    "name": ".NETStandard,Version=v2.1/",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETStandard,Version=v2.1": {},
+    ".NETStandard,Version=v2.1/": {
+      "QuicNet.Infrastructure/1.0.0": {
+        "dependencies": {
+          "QuicNet.Utilities": "1.0.0"
+        },
+        "runtime": {
+          "QuicNet.Infrastructure.dll": {}
+        }
+      },
+      "QuicNet.Utilities/1.0.0": {
+        "runtime": {
+          "QuicNet.Utilities.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "QuicNet.Infrastructure/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "QuicNet.Utilities/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
